@@ -248,7 +248,7 @@ export default function Step4Preview({ onBack, onClose }: any) {
               {primaryValueName}
             </span>
           </div>
-          <div className="flex items-center gap-1 bg-amber-400 text-amber-950 font-extrabold px-3 py-1 rounded-xl text-sm shadow-md">
+          <div className="flex items-center gap-1 bg-amber-500 text-white font-extrabold px-3.5 py-1 rounded-xl text-sm shadow-md">
             <span>{data.points ?? 100} Pts</span>
           </div>
         </div>
@@ -260,7 +260,7 @@ export default function Step4Preview({ onBack, onClose }: any) {
         <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#555DE3] via-purple-500 to-[#00C985]" />
 
         <h3 className="font-bold text-xl mb-6 text-[#555DE3] flex items-center gap-2 pt-1">
-          <Coins className="w-5 h-5 text-amber-500" />
+          <Coins className="w-5 h-5 text-[#555DE3]" />
           Actions & Points
         </h3>
 
