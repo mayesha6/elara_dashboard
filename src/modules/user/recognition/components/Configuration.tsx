@@ -73,16 +73,16 @@ export default function Configuration({ onNext, onBack }: any) {
         <section className="bg-white/40 p-1 rounded-2xl">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center shrink-0 border border-indigo-100 shadow-xs">
-                <Layers className="w-5 h-5 text-[#555DE3]" />
+              <div className="w-10 h-10 rounded-xl bg-orange-100/80 flex items-center justify-center shrink-0 border border-orange-200/60 shadow-xs">
+                <Layers className="w-5 h-5 text-orange-600" />
               </div>
               <div>
-                <h3 className="font-bold text-xl text-[#555DE3] tracking-tight">Select Category</h3>
+                <h3 className="font-bold text-xl text-orange-600 tracking-tight">Select Category</h3>
                 <p className="text-xs text-slate-400">Choose the primary occasion for this recognition</p>
               </div>
             </div>
             {selectedCategoryObj && (
-              <span className="text-xs font-semibold px-2.5 py-1 bg-indigo-50 text-[#555DE3] rounded-full border border-indigo-100 animate-fade-in">
+              <span className="text-xs font-semibold px-2.5 py-1 bg-orange-50 text-orange-700 rounded-full border border-orange-200/60 animate-fade-in">
                 {selectedCategoryObj.name}
               </span>
             )}
@@ -104,8 +104,8 @@ export default function Configuration({ onNext, onBack }: any) {
                   }}
                   className={`px-4 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 flex items-center gap-2 transform active:scale-95 ${
                     isSelected
-                      ? "bg-gradient-to-r from-[#555DE3] to-[#7B82F6] text-white shadow-md shadow-indigo-500/25 border border-transparent"
-                      : "bg-white text-slate-700 border border-slate-200 hover:border-[#555DE3] hover:text-[#555DE3] hover:bg-indigo-50/30 shadow-2xs"
+                      ? "bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-md shadow-orange-500/25 border border-transparent"
+                      : "bg-white text-slate-700 border border-slate-200 hover:border-orange-500 hover:text-orange-600 hover:bg-orange-50/30 shadow-2xs"
                   }`}
                 >
                   {isSelected && <Check className="w-4 h-4 text-white stroke-[3] animate-scale-in" />}
@@ -120,16 +120,16 @@ export default function Configuration({ onNext, onBack }: any) {
         <section className="bg-white/40 p-1 rounded-2xl">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center shrink-0 border border-indigo-100 shadow-xs">
-                <Smile className="w-5 h-5 text-[#555DE3]" />
+              <div className="w-10 h-10 rounded-xl bg-teal-100/80 flex items-center justify-center shrink-0 border border-teal-200/60 shadow-xs">
+                <Smile className="w-5 h-5 text-teal-600" />
               </div>
               <div>
-                <h3 className="font-bold text-xl text-[#555DE3] tracking-tight">Choose Tone of Value</h3>
+                <h3 className="font-bold text-xl text-teal-600 tracking-tight">Choose Tone of Value</h3>
                 <p className="text-xs text-slate-400">Sets the emotional tone for AI message generation</p>
               </div>
             </div>
             {selectedToneObj && (
-              <span className="text-xs font-semibold px-2.5 py-1 bg-indigo-50 text-[#555DE3] rounded-full border border-indigo-100 animate-fade-in">
+              <span className="text-xs font-semibold px-2.5 py-1 bg-teal-50 text-teal-700 rounded-full border border-teal-200/60 animate-fade-in">
                 {selectedToneObj.name}
               </span>
             )}
@@ -145,8 +145,8 @@ export default function Configuration({ onNext, onBack }: any) {
                   onClick={() => setValue("toneId", tone._id)}
                   className={`px-4 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 flex items-center gap-2 transform active:scale-95 ${
                     isSelected
-                      ? "bg-gradient-to-r from-[#00C985] to-teal-500 text-white shadow-md shadow-emerald-500/25 border border-transparent"
-                      : "bg-white text-slate-700 border border-slate-200 hover:border-[#00C985] hover:text-[#00C985] hover:bg-emerald-50/30 shadow-2xs"
+                      ? "bg-gradient-to-r from-teal-500 to-emerald-500 text-white shadow-md shadow-teal-500/25 border border-transparent"
+                      : "bg-white text-slate-700 border border-slate-200 hover:border-teal-500 hover:text-teal-600 hover:bg-teal-50/30 shadow-2xs"
                   }`}
                 >
                   {isSelected && <Check className="w-4 h-4 text-white stroke-[3] animate-scale-in" />}
@@ -161,7 +161,7 @@ export default function Configuration({ onNext, onBack }: any) {
         <section className="bg-white/40 p-1 rounded-2xl">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center shrink-0 border border-indigo-100 shadow-xs">
+              <div className="w-10 h-10 rounded-xl bg-indigo-100/80 flex items-center justify-center shrink-0 border border-indigo-200/60 shadow-xs">
                 <Award className="w-5 h-5 text-[#555DE3]" />
               </div>
               <div>
@@ -202,11 +202,11 @@ export default function Configuration({ onNext, onBack }: any) {
         {/* AI Message Control (Optional Prompt) */}
         <section className="bg-white/40 p-1 rounded-2xl">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center shrink-0 border border-indigo-100 shadow-xs">
-              <Sparkles className="w-5 h-5 text-[#555DE3]" />
+            <div className="w-10 h-10 rounded-xl bg-purple-100/80 flex items-center justify-center shrink-0 border border-purple-200/60 shadow-xs">
+              <Sparkles className="w-5 h-5 text-purple-600" />
             </div>
             <div>
-              <h3 className="font-bold text-xl text-[#555DE3] tracking-tight">
+              <h3 className="font-bold text-xl text-purple-600 tracking-tight">
                 AI Message Guidance <span className="font-normal text-xs text-slate-400">(Optional)</span>
               </h3>
               <p className="text-xs text-slate-400">Give custom instructions to tweak the generated message</p>
