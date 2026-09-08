@@ -35,9 +35,9 @@ export default function SendRecognitionWizard({ prefilledUser, onClose }: any) {
 
   return (
     <FormProvider {...methods}>
-      <div className="w-full space-y-6">
+      <div className="w-full space-y-8">
         {/* Step Progress Indicator Header */}
-        <div className="py-3 w-full bg-white/60 backdrop-blur-md rounded-2xl border border-slate-100 shadow-xs mb-2">
+        <div className="py-3 w-full bg-white/60 backdrop-blur-md rounded-2xl border border-slate-100 shadow-xs mb-8">
           <div className="flex items-center justify-between max-w-3xl mx-auto relative px-6">
             {/* Connecting Progress Line */}
             <div className="absolute top-5 left-16 right-16 h-[3px] bg-slate-100 -z-0 rounded-full overflow-hidden">

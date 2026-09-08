@@ -73,16 +73,16 @@ export default function Configuration({ onNext, onBack }: any) {
         <section className="bg-white/40 p-1 rounded-2xl">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center shrink-0 border border-amber-500/20 shadow-xs">
-                <Layers className="w-5 h-5 text-amber-600" />
+              <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center shrink-0 border border-indigo-100 shadow-xs">
+                <Layers className="w-5 h-5 text-[#555DE3]" />
               </div>
               <div>
-                <h3 className="font-bold text-lg text-slate-800 tracking-tight">Select Category</h3>
+                <h3 className="font-bold text-xl text-[#555DE3] tracking-tight">Select Category</h3>
                 <p className="text-xs text-slate-400">Choose the primary occasion for this recognition</p>
               </div>
             </div>
             {selectedCategoryObj && (
-              <span className="text-xs font-semibold px-2.5 py-1 bg-amber-50 text-amber-700 rounded-full border border-amber-200/60 animate-fade-in">
+              <span className="text-xs font-semibold px-2.5 py-1 bg-indigo-50 text-[#555DE3] rounded-full border border-indigo-100 animate-fade-in">
                 {selectedCategoryObj.name}
               </span>
             )}
@@ -120,16 +120,16 @@ export default function Configuration({ onNext, onBack }: any) {
         <section className="bg-white/40 p-1 rounded-2xl">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-teal-500/10 flex items-center justify-center shrink-0 border border-teal-500/20 shadow-xs">
-                <Smile className="w-5 h-5 text-teal-600" />
+              <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center shrink-0 border border-indigo-100 shadow-xs">
+                <Smile className="w-5 h-5 text-[#555DE3]" />
               </div>
               <div>
-                <h3 className="font-bold text-lg text-slate-800 tracking-tight">Choose Tone of Value</h3>
+                <h3 className="font-bold text-xl text-[#555DE3] tracking-tight">Choose Tone of Value</h3>
                 <p className="text-xs text-slate-400">Sets the emotional tone for AI message generation</p>
               </div>
             </div>
             {selectedToneObj && (
-              <span className="text-xs font-semibold px-2.5 py-1 bg-teal-50 text-teal-700 rounded-full border border-teal-200/60 animate-fade-in">
+              <span className="text-xs font-semibold px-2.5 py-1 bg-indigo-50 text-[#555DE3] rounded-full border border-indigo-100 animate-fade-in">
                 {selectedToneObj.name}
               </span>
             )}
@@ -161,13 +161,13 @@ export default function Configuration({ onNext, onBack }: any) {
         <section className="bg-white/40 p-1 rounded-2xl">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center shrink-0 border border-indigo-500/20 shadow-xs">
+              <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center shrink-0 border border-indigo-100 shadow-xs">
                 <Award className="w-5 h-5 text-[#555DE3]" />
               </div>
               <div>
-                <h3 className="font-bold text-lg text-slate-800 tracking-tight">
+                <h3 className="font-bold text-xl text-[#555DE3] tracking-tight">
                   Employee Recognition Value{" "}
-                  <span className="font-normal text-xs text-slate-500">(Choose up to 3)</span>
+                  <span className="font-normal text-sm text-[#555DE3] ml-1">(Choose up to 3)</span>
                 </h3>
                 <p className="text-xs text-slate-400">Select key virtues demonstrated by the recipient</p>
               </div>
@@ -202,11 +202,11 @@ export default function Configuration({ onNext, onBack }: any) {
         {/* AI Message Control (Optional Prompt) */}
         <section className="bg-white/40 p-1 rounded-2xl">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center shrink-0 border border-purple-500/20 shadow-xs">
-              <Sparkles className="w-5 h-5 text-purple-600" />
+            <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center shrink-0 border border-indigo-100 shadow-xs">
+              <Sparkles className="w-5 h-5 text-[#555DE3]" />
             </div>
             <div>
-              <h3 className="font-bold text-lg text-slate-800 tracking-tight">
+              <h3 className="font-bold text-xl text-[#555DE3] tracking-tight">
                 AI Message Guidance <span className="font-normal text-xs text-slate-400">(Optional)</span>
               </h3>
               <p className="text-xs text-slate-400">Give custom instructions to tweak the generated message</p>
