@@ -2,10 +2,9 @@
 
 import { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowRight, X } from "lucide-react";
+import { ArrowRight, UserCheck } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -14,8 +13,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { SendRecognitionFormValues } from "../validation/recognition.schema";
-
-// Cleaned up dummy users. Using react-hook-form to manage form state directly.
 
 interface SelectUserProps {
   prefilledUser: any;
@@ -64,61 +61,61 @@ export default function SelectUser({ prefilledUser, onContinue }: SelectUserProp
 
   return (
     <div className="flex justify-center items-start mt-10">
-      <div className="bg-white rounded-2xl border border-gradient shadow-sm w-full max-w-lg p-8 relative">
+      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-md shadow-slate-200/50 w-full max-w-lg p-8 relative overflow-hidden">
+        {/* Top Decorative Line */}
+        <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#555DE3] via-purple-500 to-[#00C985]" />
 
-        {/* Close Button (Optional, can be hooked to onClose if needed) */}
-        {/* <button className="absolute top-6 right-6 text-gray-400 hover:text-gray-600">
-          <X className="w-5 h-5" />
-        </button> */}
-
-        <div className="mb-8">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-2">Who would you like to recognize?</h2>
-          <p className="text-gray-500 text-sm">Search and select a team member or fill guest details</p>
+        <div className="mb-8 pt-1">
+          <div className="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center mb-3 border border-indigo-100 text-[#555DE3]">
+            <UserCheck className="w-6 h-6" />
+          </div>
+          <h2 className="text-2xl font-bold text-slate-800 mb-1">Who would you like to recognize?</h2>
+          <p className="text-slate-500 text-sm">Enter recipient details or select a team member</p>
         </div>
 
         <div className="space-y-6">
-          {/* Full Name / Search Field */}
+          {/* Full Name Field */}
           <div className="space-y-2">
-            <Label htmlFor="fullName" className="text-gray-700 font-medium">Full Name</Label>
+            <Label htmlFor="fullName" className="text-slate-700 font-semibold text-sm">Full Name</Label>
             <Input
               id="fullName"
-              placeholder="e.g. Saifur"
+              placeholder="e.g. Saifur Rahman"
               value={recipientName}
               onChange={(e) => setValue("recipientName", e.target.value, { shouldValidate: true })}
-              disabled={!!prefilledUser} // Lock if prefilled
-              className="h-12 border border-gray focus-visible:ring-0 focus-visible:ring-offset-0"
+              disabled={!!prefilledUser}
+              className="h-12 border border-slate-200 focus:border-[#555DE3] focus:ring-2 focus:ring-indigo-500/20 rounded-xl text-slate-800 placeholder:text-slate-400"
             />
             {errors.recipientName && (
-              <p className="text-red-500 text-sm mt-1">{errors.recipientName.message}</p>
+              <p className="text-red-500 text-xs mt-1 font-medium">{errors.recipientName.message}</p>
             )}
           </div>
 
           {/* Email Address Field */}
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-gray-700 font-medium">Email Address</Label>
+            <Label htmlFor="email" className="text-slate-700 font-semibold text-sm">Email Address</Label>
             <Input
               id="email"
               placeholder="example@gmail.com"
               value={receiverEmail}
               onChange={(e) => setValue("receiverEmail", e.target.value, { shouldValidate: true })}
-              disabled={!!prefilledUser} // Lock if prefilled
-              className="h-12 border border-gray focus-visible:ring-0 focus-visible:ring-offset-0"
+              disabled={!!prefilledUser}
+              className="h-12 border border-slate-200 focus:border-[#555DE3] focus:ring-2 focus:ring-indigo-500/20 rounded-xl text-slate-800 placeholder:text-slate-400"
             />
             {errors.receiverEmail && (
-              <p className="text-red-500 text-sm mt-1">{errors.receiverEmail.message}</p>
+              <p className="text-red-500 text-xs mt-1 font-medium">{errors.receiverEmail.message}</p>
             )}
           </div>
 
           {/* Department Field */}
           <div className="space-y-2">
-            <Label htmlFor="department" className="text-gray-700 font-medium">
-              Select from Departments <span className="text-gray-400 font-normal">(Optional)</span>
+            <Label htmlFor="department" className="text-slate-700 font-semibold text-sm">
+              Department <span className="text-slate-400 font-normal text-xs">(Optional)</span>
             </Label>
             <Select
               disabled={true}
               value={department}
             >
-              <SelectTrigger className="h-12 border border-gray focus-visible:ring-0 focus-visible:ring-offset-0">
+              <SelectTrigger className="h-12 border border-slate-200 rounded-xl text-slate-800">
                 <SelectValue placeholder="Select Department" />
               </SelectTrigger>
               <SelectContent>
@@ -128,13 +125,14 @@ export default function SelectUser({ prefilledUser, onContinue }: SelectUserProp
           </div>
 
           {/* Action Button */}
-          <Button
+          <button
+            type="button"
             onClick={handleNext}
-            className="w-full h-12 bg-gradient hover:bg-[#7C3AED] text-white rounded-lg text-base font-medium mt-4"
+            className="w-full h-12 bg-gradient-to-r from-[#555DE3] to-[#7B82F6] hover:from-[#454dc7] hover:to-[#686ee8] text-white rounded-xl text-base font-bold mt-4 flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/25 transition-all duration-200 cursor-pointer"
           >
-            Continue to Details
-            <ArrowRight className="w-5 h-5 ml-2" />
-          </Button>
+            <span>Continue to Details</span>
+            <ArrowRight className="w-5 h-5" />
+          </button>
         </div>
       </div>
     </div>
