@@ -1,36 +1,92 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Greetely / Employee Recognition Dashboard
 
-## Getting Started
+A modern, role-based Employee Recognition & Rewards Management Platform built with Next.js 16 (App Router), React 19, TypeScript, Redux Toolkit, and Tailwind CSS.
 
-First, run the development server:
+## 🚀 Features
+
+- **Multi-Role Access Control**:
+  - **Super Admin**: Platform-wide management, organization management, and system metrics.
+  - **Organization Admin**: Department & employee management, recognition programs, rewards catalog, and support ticket management.
+  - **Department Admin**: Department-level oversight and team recognition tracking.
+  - **User (Employee)**: Give and receive peer-to-peer recognitions, claim rewards, and submit support requests.
+- **Employee Recognition System**: Interactive peer-to-peer and manager-to-employee recognition workflows with previews and customizable templates.
+- **Rewards & Claim Management**: Catalogs for rewards, claiming workflows, and request status tracking.
+- **Modern UI/UX**: Built with Tailwind CSS v4, Radix UI / Shadcn UI components, Framer Motion animations, and Lucide React icons.
+- **State Management**: Redux Toolkit integrated with Redux Persist for persistent client-side state.
+
+## 🛠️ Tech Stack
+
+- **Framework**: [Next.js 16](https://nextjs.org/) (App Router, Turbopack)
+- **UI & Styling**: [React 19](https://react.dev/), [Tailwind CSS v4](https://tailwindcss.com/), [Shadcn UI](https://ui.shadcn.com/), [Radix UI](https://www.radix-ui.com/), [Framer Motion](https://www.framer.com/motion/)
+- **State Management**: [@reduxjs/toolkit](https://redux-toolkit.js.org/), `redux-persist`
+- **Data Table & Forms**: [@tanstack/react-table](https://tanstack.com/table/v8), `react-hook-form`, `zod`
+- **HTTP Client**: `axios`
+- **Notifications**: `sonner`, `react-toastify`
+- **Icons**: `lucide-react`
+
+## 📦 Project Structure
+
+```text
+src/
+├── app/                  # Next.js App Router pages and layouts
+│   └── (dashboards)/     # Dynamic & role-based dashboard routes ([orgSlug], super-admin, user)
+├── components/           # Reusable UI components (buttons, tables, modals, layout)
+├── config/               # App configuration files
+├── hooks/                # Custom React hooks
+├── lib/                  # Library configurations & helper functions
+├── modules/              # Core feature modules
+│   ├── auth/             # Authentication & authorization module
+│   ├── super-admin/      # Super Admin management screens
+│   ├── org-admin/        # Organization Admin management screens
+│   ├── dept-admin/       # Department Admin views
+│   └── user/             # Employee dashboard, recognitions, rewards
+├── providers/            # React context & state providers
+├── redux/                # Redux store, slices, and API services
+├── services/             # API services & HTTP integration
+├── types/                # TypeScript type definitions
+└── utils/                # Utility & helper scripts
+```
+
+## ⚙️ Getting Started
+
+### Prerequisites
+
+- **Node.js**: `v18.x` or higher
+- **npm** / **yarn** / **pnpm** / **bun**
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/greetely-llc/greetely-dashboard.git
+   cd greetely-dashboard
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Set up environment variables:
+   Create a `.env.local` file in the root directory and configure the required API endpoints.
+
+### Running Development Server
+
+Run the development server on port `3010`:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3010](http://localhost:3010) in your browser to view the dashboard.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Available Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `npm run dev` - Runs Next.js dev server with Turbopack on port 3010
+- `npm run build` - Creates an optimized production build
+- `npm run start` - Runs the production server on port 3010
+- `npm run lint` - Runs ESLint code check
 
-## Learn More
+## 📜 License
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Private Repository - All rights reserved.
