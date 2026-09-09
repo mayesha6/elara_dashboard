@@ -89,4 +89,4 @@ Open [http://localhost:3010](http://localhost:3010) in your browser to view the 
 
 ## 📜 License
 
-Private Repository - All rights reserved.
+Greetely Private Repository - All rights reserved.
