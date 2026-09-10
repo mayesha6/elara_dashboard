@@ -52,7 +52,7 @@ export default function Step4Preview({ onBack, onClose }: any) {
       const payload = {
         category: selectedCategoryObj?.name || "Peer-to-Peer",
         department: data.department || "General",
-        recipient_name: data.recipientName || "Colleague",
+        recipient_name: data.recipientName || "",
         recognition_values: selectedValuesObjs.map((v: any) => v.name),
         tone: selectedToneObj?.name || "Professional",
         userPrompt: data.userPrompt || undefined,
@@ -76,7 +76,7 @@ export default function Step4Preview({ onBack, onClose }: any) {
       const payload = {
         category: selectedCategoryObj?.name || "Peer-to-Peer",
         department: data.department || "General",
-        recipient_name: data.recipientName || "Colleague",
+        recipient_name: data.recipientName || "",
         recognition_values: selectedValuesObjs.map((v: any) => v.name),
         tone: selectedToneObj?.name || "Professional",
         userPrompt: data.userPrompt || undefined,
@@ -170,8 +170,8 @@ export default function Step4Preview({ onBack, onClose }: any) {
           </div>
 
           <p className="text-xs uppercase tracking-wider text-indigo-100/80 mb-0.5">Recipient:</p>
-          <h3 className="text-2xl font-bold tracking-tight">{data.recipientName || "Sarah Ahmed"}</h3>
-          <p className="text-xs text-indigo-100/90 mb-6">{data.department || "Engineering Department"}</p>
+          <h3 className="text-2xl font-bold tracking-tight">{data.recipientName}</h3>
+          {data.department && <p className="text-xs text-indigo-100/90 mb-6">{data.department}</p>}
 
           <div className="bg-white/15 p-5 rounded-2xl text-sm leading-relaxed backdrop-blur-md border border-white/20 min-h-[110px] relative group flex flex-col justify-start shadow-inner">
             {isGenerating || isRegenerating ? (

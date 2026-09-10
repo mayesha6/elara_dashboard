@@ -9,7 +9,7 @@ import Preview from "./Preview";
 import { UserCheck, SlidersHorizontal, Sparkles, Check } from "lucide-react";
 
 export default function SendRecognitionWizard({ prefilledUser, onClose }: any) {
-  const [step, setStep] = useState(2); // Step 2 configuration active
+  const [step, setStep] = useState(prefilledUser ? 2 : 1);
   const methods = useForm<SendRecognitionFormValues>({
     resolver: zodResolver(sendRecognitionSchema),
     defaultValues: {
@@ -26,6 +26,14 @@ export default function SendRecognitionWizard({ prefilledUser, onClose }: any) {
       userPrompt: ""
     }
   });
+
+  const handleStepChange = async (targetStep: number) => {
+    if (targetStep > 1) {
+      const isValid = await methods.trigger(["recipientId", "recipientName", "receiverEmail"]);
+      if (!isValid) return;
+    }
+    setStep(targetStep);
+  };
 
   const steps = [
     { number: 1, label: "Select Recipient", icon: UserCheck },
@@ -59,7 +67,9 @@ export default function SendRecognitionWizard({ prefilledUser, onClose }: any) {
                   key={s.number} 
                   className="flex flex-col items-center gap-2 relative z-10 cursor-pointer group"
                   onClick={() => {
-                    if (s.number < step) setStep(s.number);
+                    if (s.number <= step || s.number === step + 1) {
+                      handleStepChange(s.number);
+                    }
                   }}
                 >
                   <div
