@@ -2,19 +2,13 @@
 import { useEffect } from "react";
 import Cookies from "js-cookie";
 import { slugify } from "@/utils/slugify";
+import { getWebsiteUrl } from "@/config/env";
 
 export default function HomePage() {
   useEffect(() => {
     const token = Cookies.get("accessToken");
     if (!token) {
-      let landingPageUrl = "https://greetely.com";
-      if (typeof window !== "undefined") {
-        if (window.location.hostname.includes("localhost")) {
-          landingPageUrl = "http://localhost:3041";
-        } else if (window.location.hostname.includes("127.0.0.1")) {
-          landingPageUrl = "http://127.0.0.1:3041";
-        }
-      }
+      const landingPageUrl = getWebsiteUrl();
       window.location.href = `${landingPageUrl}/login`;
       return;
     }

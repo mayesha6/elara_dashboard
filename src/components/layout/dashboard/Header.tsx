@@ -18,6 +18,7 @@ import {
   useMarkAllAsReadMutation 
 } from "@/redux/api/notificationApi";
 import Cookies from "js-cookie";
+import { getWebsiteUrl } from "@/config/env";
 
 const getNotificationIcon = (type: string) => {
   if (type === "RECOGNITION") return Award;
@@ -49,6 +50,7 @@ const formatTimeAgo = (dateString?: string) => {
 };
 
 export default function Header() {
+  const websiteUrl = getWebsiteUrl();
   const router = useRouter();
   const dispatch = useDispatch();
   const token = useSelector((state: RootState) => state.auth?.token) || Cookies.get("accessToken");
@@ -120,14 +122,14 @@ export default function Header() {
 
   const handleLogout = () => {
     dispatch(logout());
-    window.location.href = "https://greetely.com/login";
+    window.location.href = `${websiteUrl}/login`;
   };
 
   return (
     <header className="h-auto md:h-20 bg-white border-b border-b-gray flex items-center justify-between px-4 md:px-8 py-3 gap-4">
       {/* Greetely Logo */}
       <div className="flex items-center gap-2">
-        <Link href="https://greetely.com/" className="flex items-center gap-2 shrink-0">
+        <Link href={websiteUrl} className="flex items-center gap-2 shrink-0">
           <Image
             src={logo} 
             alt="Greetely Logo"

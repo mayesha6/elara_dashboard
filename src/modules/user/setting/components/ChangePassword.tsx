@@ -65,12 +65,11 @@ export default function ChangePassword() {
 
     try {
       const res = await editPassword({     
-          oldPassword,
-          newPassword,
-          confirmPassword
-        
+        oldPassword,
+        newPassword,
+        confirmPassword,
       }).unwrap();
-console.log({res})
+
       toast.success(
         res?.message || "Password updated successfully!"
       );
@@ -80,8 +79,7 @@ console.log({res})
         newPassword: "",
         confirmPassword: "",
       });
-    } catch (error: any) {
-      console.error(error);
+    } catch (error: unknown) {
       toast.error(formatErrorMessage(error, "Failed to update password. Please try again."));
     }
   };

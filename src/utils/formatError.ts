@@ -1,5 +1,7 @@
-export const formatErrorMessage = (error: any, defaultMessage: string = "Something went wrong."): string => {
-  let errMsg = error?.data?.message || error?.message || defaultMessage;
+export const formatErrorMessage = (error: unknown, defaultMessage: string = "Something went wrong."): string => {
+  const errObj = error as { data?: { message?: string | object }; message?: string };
+  const rawMsg = errObj?.data?.message || errObj?.message || defaultMessage;
+  const errMsg = typeof rawMsg === "string" ? rawMsg : JSON.stringify(rawMsg);
   
   if (typeof errMsg === "string") {
     if (errMsg.includes("Incorrect API key") || errMsg.includes("invalid_api_key")) {
@@ -16,9 +18,9 @@ export const formatErrorMessage = (error: any, defaultMessage: string = "Somethi
       try {
         const parsed = JSON.parse(errMsg);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed.map((item: any) => item.message).join(", ");
+          return parsed.map((item: { message?: string }) => item.message || "").filter(Boolean).join(", ");
         }
-      } catch (e) {
+      } catch {
         // ignore parsing error
       }
     }

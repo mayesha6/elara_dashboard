@@ -10,8 +10,6 @@ export function EditPointModal({
   type = "point", // ডিফল্ট 'point', প্রয়োজনে 'employee' পাঠাবেন
   departments = []
 }: any) {
-  if (!isOpen) return null;
-
   const isPointMode = type === "point";
 
   const getInitialStatus = (user: any) => {
@@ -41,6 +39,8 @@ export function EditPointModal({
       setStatus(getInitialStatus(userData));
     }
   }, [userData]);
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black/40 backdrop-blur-[2px] flex items-center justify-center z-50 p-4">

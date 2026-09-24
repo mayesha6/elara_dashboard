@@ -1,9 +1,22 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import Cookies from "js-cookie";
+import { getAuthCookieOptions, clearGreetelyStorage } from "@/config/env";
+
+export interface UserProfile {
+  _id?: string;
+  id?: string;
+  email: string | null;
+  name?: string;
+  role: string | null;
+  companyName?: string;
+  organizationId?: any;
+  subscriptionStatus?: string;
+  picture?: string;
+}
 
 interface AuthState {
   token: string | null;
-  user: { email: string | null; role: string | null } | null;
+  user: UserProfile | null;
   isAuthenticated: boolean;
 }
 
@@ -18,31 +31,29 @@ const getInitialState = (): AuthState => {
 
   const token = Cookies.get("accessToken") || null;
 
-  const user = localStorage.getItem("user");
+  const userStr = localStorage.getItem("user");
+  let user: UserProfile | null = null;
+  if (userStr) {
+    try {
+      user = JSON.parse(userStr);
+    } catch {
+      user = null;
+    }
+  }
 
   return {
     token,
-    user: user ? JSON.parse(user) : null,
+    user,
     isAuthenticated: !!token,
   };
 };
+
 const authSlice = createSlice({
   name: "auth",
   initialState: getInitialState(),
   reducers: {
-    setUser: (state, action: PayloadAction<{ token: string; user: any }>) => {
-      const isProduction =
-        process.env.NODE_ENV === "production" &&
-        typeof window !== "undefined" &&
-        !window.location.hostname.includes("localhost") &&
-        !window.location.hostname.includes("127.0.0.1");
-
-      const cookieOptions = {
-        domain: isProduction ? ".greetely.com" : undefined,
-        secure: isProduction,
-        sameSite: "Lax" as const,
-        path: "/",
-      };
+    setUser: (state, action: PayloadAction<{ token: string; user: UserProfile }>) => {
+      const cookieOptions = getAuthCookieOptions();
 
       state.token = action.payload.token;
       state.user = action.payload.user;
@@ -51,18 +62,7 @@ const authSlice = createSlice({
       localStorage.setItem("user", JSON.stringify(action.payload.user));
     },
     logout: (state) => {
-      const isProduction =
-        process.env.NODE_ENV === "production" &&
-        typeof window !== "undefined" &&
-        !window.location.hostname.includes("localhost") &&
-        !window.location.hostname.includes("127.0.0.1");
-
-      const cookieOptions = {
-        domain: isProduction ? ".greetely.com" : undefined,
-        secure: isProduction,
-        sameSite: "Lax" as const,
-        path: "/",
-      };
+      const cookieOptions = getAuthCookieOptions();
 
       state.token = null;
       state.user = null;
@@ -71,11 +71,11 @@ const authSlice = createSlice({
       Cookies.remove("accessToken", { path: "/" });
       Cookies.remove("refreshToken", cookieOptions);
       Cookies.remove("refreshToken", { path: "/" });
-      localStorage.clear();
+      clearGreetelyStorage();
     },
   },
   extraReducers: (builder) => {
-    builder.addCase("persist/REHYDRATE", (state: any, action: any) => {
+    builder.addCase("persist/REHYDRATE", (state: AuthState) => {
       if (typeof window !== "undefined") {
         const token = Cookies.get("accessToken");
         if (token) {

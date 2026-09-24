@@ -1,40 +1,18 @@
-// import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-// import { RootState } from "../store";
-
-
-// export const baseApi = createApi({
-//   reducerPath: "baseApi",
-//   baseQuery: fetchBaseQuery({
-//     baseUrl: process.env.NEXT_PUBLIC_BASE_URL,
-//     prepareHeaders: (headers, { getState }) => {
-//       const token = (getState() as RootState).auth.token;
-//       if (token) headers.set("Authorization", `Bearer ${token}`);
-//       return headers;
-//     },
-//   }),
-//   tagTypes: [
-//     "User",
-//     "Recognition"
-// ],
-//   endpoints: () => ({}),
-// });
-
 import {
-  BaseQueryApi,
   BaseQueryFn,
   createApi,
-  DefinitionType,
   FetchArgs,
   fetchBaseQuery,
+  FetchBaseQueryError,
 } from "@reduxjs/toolkit/query/react";
 import { RootState } from "../store";
 import { logout, setUser } from "../features/authSlice";
-
 import Cookies from "js-cookie";
+import { getApiBaseUrl } from "@/config/env";
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: process.env.NEXT_PUBLIC_BASE_URL,
-  // credentials: "include",
+  baseUrl: getApiBaseUrl(),
+  credentials: "include",
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as RootState).auth.token || Cookies.get("accessToken");
 
@@ -47,31 +25,37 @@ const baseQuery = fetchBaseQuery({
 });
 
 const baseQueryWithRefreshToken: BaseQueryFn<
-  FetchArgs,
-  BaseQueryApi,
-  DefinitionType
-> = async (args, api, extraOptions): Promise<any> => {
+  string | FetchArgs,
+  unknown,
+  FetchBaseQueryError
+> = async (args, api, extraOptions) => {
   let result = await baseQuery(args, api, extraOptions);
   if (result?.error?.status === 401) {
     const refreshTokenVal = Cookies.get("refreshToken");
-    const refreshTokenReq = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/auth/refresh-token`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ refreshToken: refreshTokenVal }),
-        credentials: "include",
-      }
-    );
-    const refreshToken = await refreshTokenReq.json();
+    try {
+      const refreshTokenReq = await fetch(
+        `${getApiBaseUrl()}/auth/refresh-token`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ refreshToken: refreshTokenVal }),
+          credentials: "include",
+        }
+      );
+      const refreshToken = await refreshTokenReq.json();
 
-    if (refreshToken?.data?.accessToken) {
-      const user = (api.getState() as RootState).auth.user;
-      api.dispatch(setUser({ user, token: refreshToken?.data?.accessToken }));
-      result = await baseQuery(args, api, extraOptions);
-    } else {
+      if (refreshToken?.data?.accessToken) {
+        const user = (api.getState() as RootState).auth.user;
+        if (user) {
+          api.dispatch(setUser({ user, token: refreshToken?.data?.accessToken }));
+        }
+        result = await baseQuery(args, api, extraOptions);
+      } else {
+        api.dispatch(logout());
+      }
+    } catch {
       api.dispatch(logout());
     }
   }
@@ -81,7 +65,19 @@ const baseQueryWithRefreshToken: BaseQueryFn<
 
 export const baseApi = createApi({
   reducerPath: "baseApi",
-  tagTypes: ["User", "Recognition", "Reward", "Claim", "Notification", "SupportTicket", "Wallet", "Category", "Tone", "RecognitionValue"],
+  tagTypes: [
+    "User",
+    "Recognition",
+    "Reward",
+    "Claim",
+    "Notification",
+    "SupportTicket",
+    "Wallet",
+    "Category",
+    "Tone",
+    "RecognitionValue",
+  ],
   baseQuery: baseQueryWithRefreshToken,
   endpoints: () => ({}),
 });
+

@@ -10,6 +10,8 @@ import { RootState } from "@/redux/store";
 import { useEffect } from "react";
 import { slugify } from "@/utils/slugify";
 
+import { getWebsiteUrl } from "@/config/env";
+
 export default function SubscriptionGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const params = useParams();
@@ -18,15 +20,7 @@ export default function SubscriptionGuard({ children }: { children: React.ReactN
   const dispatch = useDispatch();
   const token = useSelector((state: RootState) => state.auth?.token) || Cookies.get("accessToken");
 
-  // Determine landing page URL for redirection
-  let landingPageUrl = "https://greetely.com";
-  if (typeof window !== "undefined") {
-    if (window.location.hostname.includes("localhost")) {
-      landingPageUrl = "http://localhost:3041";
-    } else if (window.location.hostname.includes("127.0.0.1")) {
-      landingPageUrl = "http://127.0.0.1:3041";
-    }
-  }
+  const landingPageUrl = getWebsiteUrl();
 
   // Redirect to landing page login if no token is found
   // Also check periodically and on window focus if the cookie is gone (e.g. logged out from landing page in another tab)
@@ -95,25 +89,12 @@ export default function SubscriptionGuard({ children }: { children: React.ReactN
 
   const handleLogout = () => {
     dispatch(logout());
-    Cookies.remove("accessToken");
-    Cookies.remove("refreshToken");
     window.location.href = `${landingPageUrl}/login`;
   };
 
   const handleUpgrade = () => {
-    let upgradeLandingUrl = "https://greetely.com";
-    if (typeof window !== "undefined") {
-      if (window.location.hostname.includes("localhost")) {
-        upgradeLandingUrl = "http://localhost:3041";
-      } else if (window.location.hostname.includes("127.0.0.1")) {
-        upgradeLandingUrl = "http://127.0.0.1:3041";
-      }
-    }
-    const refreshToken = Cookies.get("refreshToken");
-    const params = new URLSearchParams();
-    if (token) params.set("token", token);
-    if (refreshToken) params.set("refreshToken", refreshToken);
-    window.location.href = `${upgradeLandingUrl}/pricing?${params.toString()}`;
+    // Safe upgrade navigation without leaking tokens in URL parameters
+    window.location.href = `${landingPageUrl}/pricing`;
   };
 
   if (!token) {

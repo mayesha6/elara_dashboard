@@ -9,6 +9,9 @@ import { useGetMeQuery } from "@/redux/api/authApi";
 import { toast } from "sonner";
 import DeleteConfirmationModal from "@/components/common/DeleteConfirmationModal";
 
+import { getWebsiteUrl } from "@/config/env";
+import { formatErrorMessage } from "@/utils/formatError";
+
 export default function DangerZone() {
   const dispatch = useAppDispatch();
   const { data: profileRes } = useGetMeQuery(undefined);
@@ -19,7 +22,7 @@ export default function DangerZone() {
 
   const handleLogout = () => {
     dispatch(logout());
-    window.location.href = "https://greetely.com/login";
+    window.location.href = `${getWebsiteUrl()}/login`;
   };
 
   const handleDeleteAccount = async () => {
@@ -27,9 +30,8 @@ export default function DangerZone() {
       await deleteOwnAccount(undefined).unwrap();
       toast.success("Account deleted successfully.");
       handleLogout();
-    } catch (error: any) {
-      console.error("Failed to delete account:", error);
-      toast.error(error?.data?.message || error?.message || "Failed to delete account. Please try again.");
+    } catch (error: unknown) {
+      toast.error(formatErrorMessage(error, "Failed to delete account. Please try again."));
     } finally {
       setIsDeleteModalOpen(false);
     }
@@ -69,6 +71,10 @@ export default function DangerZone() {
             : "Are you sure you want to delete your account? This action is permanent and cannot be undone."
         }
         isLoading={isDeleting}
+        requireConfirmInput={true}
+        confirmInputLabel="Type DELETE to confirm permanent account deletion:"
+        confirmInputPlaceholder="DELETE"
+        expectedInputValue="DELETE"
       />
     </div>
   );
