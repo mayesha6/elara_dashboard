@@ -25,6 +25,7 @@ export const recognitionApi = baseApi.injectEndpoints({
         url: "/points/my-balance",
         method: "GET",
       }),
+      providesTags: ["Recognition", "User"],
     }),
   }),
 });

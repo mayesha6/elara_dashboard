@@ -56,8 +56,9 @@ export default function DashboardPage() {
   const claims = claimsRes?.data || [];
 
   // Calculate totals dynamically
-  const sentRecognitions = recognitions.filter((rec: any) => rec.senderEmail === currentUser?.email);
-  const receivedRecognitions = recognitions.filter((rec: any) => rec.receiverEmail === currentUser?.email);
+  const userEmailLower = currentUser?.email?.toLowerCase();
+  const sentRecognitions = recognitions.filter((rec: any) => rec.senderEmail?.toLowerCase() === userEmailLower);
+  const receivedRecognitions = recognitions.filter((rec: any) => rec.receiverEmail?.toLowerCase() === userEmailLower);
 
   const sentPointsTotal = sentRecognitions.reduce((sum: number, rec: any) => sum + (rec.points || 0), 0);
   const receivedPointsTotal = receivedRecognitions.reduce((sum: number, rec: any) => sum + (rec.points || 0), 0);
@@ -103,8 +104,8 @@ export default function DashboardPage() {
       return date.getMonth() === idx && date.getFullYear() === new Date().getFullYear();
     });
 
-    const receiveCount = monthlyRecs.filter((rec: any) => rec.receiverEmail === currentUser?.email).length;
-    const sentCount = monthlyRecs.filter((rec: any) => rec.senderEmail === currentUser?.email).length;
+    const receiveCount = monthlyRecs.filter((rec: any) => rec.receiverEmail?.toLowerCase() === userEmailLower).length;
+    const sentCount = monthlyRecs.filter((rec: any) => rec.senderEmail?.toLowerCase() === userEmailLower).length;
 
     return {
       name: month,
