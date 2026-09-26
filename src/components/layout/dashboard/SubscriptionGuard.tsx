@@ -7,9 +7,8 @@ import { useRouter, useParams, usePathname } from "next/navigation";
 import Cookies from "js-cookie";
 import { ShieldAlert, LogOut, ArrowUpRight } from "lucide-react";
 import { RootState } from "@/redux/store";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { slugify } from "@/utils/slugify";
-
 import { getWebsiteUrl } from "@/config/env";
 
 export default function SubscriptionGuard({ children }: { children: React.ReactNode }) {
@@ -21,31 +20,30 @@ export default function SubscriptionGuard({ children }: { children: React.ReactN
   const token = useSelector((state: RootState) => state.auth?.token) || Cookies.get("accessToken");
 
   const landingPageUrl = getWebsiteUrl();
+  const [hasSubscriptionError, setHasSubscriptionError] = useState(false);
 
-  // Redirect to landing page login if no token is found
-  // Also check periodically and on window focus if the cookie is gone (e.g. logged out from landing page in another tab)
+  // Subscribe to custom 402/403 subscription events from baseApi
   useEffect(() => {
-    const checkToken = () => {
-      const activeToken = Cookies.get("accessToken");
-      if (!activeToken) {
-        dispatch(logout());
-        window.location.href = `${landingPageUrl}/login?redirect=${encodeURIComponent(window.location.href)}`;
-      }
+    const handleSubscriptionError = () => {
+      setHasSubscriptionError(true);
     };
 
-    checkToken();
-
-    window.addEventListener("focus", checkToken);
-    const interval = setInterval(checkToken, 3000); // Check every 3 seconds
-
+    window.addEventListener("subscription_required", handleSubscriptionError);
     return () => {
-      window.removeEventListener("focus", checkToken);
-      clearInterval(interval);
+      window.removeEventListener("subscription_required", handleSubscriptionError);
     };
-  }, [landingPageUrl, dispatch]);
+  }, []);
 
-  const { data: profileData, isLoading } = useGetMeQuery(undefined, { skip: !token });
+  const { data: profileData, isLoading, error } = useGetMeQuery(undefined);
   const user = profileData?.data;
+
+  // If unauthorized (401), redirect to login page
+  useEffect(() => {
+    if (error && "status" in error && error.status === 401) {
+      dispatch(logout());
+      window.location.href = `${landingPageUrl}/login?redirect=${encodeURIComponent(window.location.href)}`;
+    }
+  }, [error, dispatch, landingPageUrl]);
 
   const expectedSlug =
     user?.role === "ORGANIZATION_ADMIN"
@@ -80,12 +78,17 @@ export default function SubscriptionGuard({ children }: { children: React.ReactN
     }
   }, [user, expectedSlug, pathname, orgSlug, router]);
 
-  // Check if user is Org Admin and subscription is not active or trialing
+  // Check if user is Org Admin and subscription is not active or trialing, or if API returned 402/403
   const isOrgAdmin = user?.role === "ORGANIZATION_ADMIN";
+  const isApiSubscriptionError =
+    hasSubscriptionError ||
+    (error && "status" in error && (error.status === 402 || error.status === 403));
+
   const isSubscriptionInactive =
-    isOrgAdmin &&
-    user?.subscriptionStatus !== "ACTIVE" &&
-    user?.subscriptionStatus !== "TRIAL";
+    isApiSubscriptionError ||
+    (isOrgAdmin &&
+      user?.subscriptionStatus !== "ACTIVE" &&
+      user?.subscriptionStatus !== "TRIAL");
 
   const handleLogout = () => {
     dispatch(logout());
@@ -93,18 +96,9 @@ export default function SubscriptionGuard({ children }: { children: React.ReactN
   };
 
   const handleUpgrade = () => {
-    // Safe upgrade navigation without leaking tokens in URL parameters
+    // Safe upgrade navigation to landing page pricing without leaking tokens in URL parameters
     window.location.href = `${landingPageUrl}/pricing`;
   };
-
-  if (!token) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 gap-2">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600"></div>
-        <p className="text-sm text-gray-500 font-medium animate-pulse">Redirecting to login...</p>
-      </div>
-    );
-  }
 
   if (isLoading) {
     return (
@@ -133,7 +127,7 @@ export default function SubscriptionGuard({ children }: { children: React.ReactN
           <div className="w-full space-y-3">
             <button
               onClick={handleUpgrade}
-              className="w-full bg-gradient hover:opacity-95 text-white py-3.5 rounded-xl font-medium text-sm transition-all shadow-md shadow-indigo-200 flex items-center justify-center gap-2"
+              className="w-full bg-gradient hover:opacity-95 text-white py-3.5 rounded-xl font-medium text-sm transition-all shadow-md shadow-indigo-200 flex items-center justify-center gap-2 cursor-pointer"
             >
               Upgrade Plan
               <ArrowUpRight size={16} />
@@ -141,7 +135,7 @@ export default function SubscriptionGuard({ children }: { children: React.ReactN
 
             <button
               onClick={handleLogout}
-              className="w-full bg-gray-50 hover:bg-gray-100 text-gray-700 py-3.5 rounded-xl font-medium text-sm transition-all border border-gray-200 flex items-center justify-center gap-2"
+              className="w-full bg-gray-50 hover:bg-gray-100 text-gray-700 py-3.5 rounded-xl font-medium text-sm transition-all border border-gray-200 flex items-center justify-center gap-2 cursor-pointer"
             >
               <LogOut size={16} />
               Log Out

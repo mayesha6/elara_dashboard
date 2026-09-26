@@ -52,13 +52,16 @@ const authSlice = createSlice({
   name: "auth",
   initialState: getInitialState(),
   reducers: {
-    setUser: (state, action: PayloadAction<{ token: string; user: UserProfile }>) => {
+    setUser: (state, action: PayloadAction<{ token?: string; user: UserProfile }>) => {
       const cookieOptions = getAuthCookieOptions();
 
-      state.token = action.payload.token;
+      if (action.payload.token) {
+        state.token = action.payload.token;
+        // Only set cookie if explicitly provided (e.g. non-HttpOnly dev mode fallback)
+        Cookies.set("accessToken", action.payload.token, cookieOptions);
+      }
       state.user = action.payload.user;
       state.isAuthenticated = true;
-      Cookies.set("accessToken", action.payload.token, cookieOptions);
       localStorage.setItem("user", JSON.stringify(action.payload.user));
     },
     logout: (state) => {

@@ -30,6 +30,7 @@ const baseQueryWithRefreshToken: BaseQueryFn<
   FetchBaseQueryError
 > = async (args, api, extraOptions) => {
   let result = await baseQuery(args, api, extraOptions);
+
   if (result?.error?.status === 401) {
     const refreshTokenVal = Cookies.get("refreshToken");
     try {
@@ -57,6 +58,15 @@ const baseQueryWithRefreshToken: BaseQueryFn<
       }
     } catch {
       api.dispatch(logout());
+    }
+  }
+
+  // Intercept 402 Payment Required or 403 Forbidden related to subscription
+  if (result?.error?.status === 402 || result?.error?.status === 403) {
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(
+        new CustomEvent("subscription_required", { detail: result.error })
+      );
     }
   }
 
