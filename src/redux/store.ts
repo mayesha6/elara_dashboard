@@ -13,7 +13,7 @@ import {
   REHYDRATE,
 } from "redux-persist";
 
-const persistConfig = { key: "root", storage, whitelist: ["auth"] };
+const persistConfig = { key: "root", storage, whitelist: [] };
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({

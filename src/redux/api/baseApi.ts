@@ -13,10 +13,8 @@ import { getApiBaseUrl } from "@/config/env";
 const baseQuery = fetchBaseQuery({
   baseUrl: getApiBaseUrl(),
   credentials: "include",
-  prepareHeaders: (headers, { getState }) => {
-    const cookieToken = Cookies.get("accessToken");
-    const stateToken = (getState() as RootState).auth?.token;
-    const token = cookieToken || stateToken;
+  prepareHeaders: (headers) => {
+    const token = Cookies.get("accessToken");
 
     if (token) {
       headers.set("authorization", `Bearer ${token}`);
