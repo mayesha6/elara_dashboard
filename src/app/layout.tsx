@@ -4,6 +4,9 @@ import {ToastContainer} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Toaster } from "sonner";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export const metadata: Metadata = {
   title: "Greetely Dashboard",
   description: "Enterprise level SaaS application",

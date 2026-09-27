@@ -3,6 +3,9 @@ import Header from "@/components/layout/dashboard/Header";
 import ReduxProvider from "@/redux/ReduxProvider";
 import SubscriptionGuard from "@/components/layout/dashboard/SubscriptionGuard";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default function DashboardsLayout({ children }: { children: React.ReactNode }) {
   return (
     <ReduxProvider>
