@@ -20,6 +20,24 @@ interface AuthState {
   isAuthenticated: boolean;
 }
 
+export const decodeJwtPayload = (token: string): any => {
+  try {
+    const base64Url = token.split(".")[1];
+    if (!base64Url) return null;
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const jsonPayload = decodeURIComponent(
+      window
+        .atob(base64)
+        .split("")
+        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+        .join("")
+    );
+    return JSON.parse(jsonPayload);
+  } catch {
+    return null;
+  }
+};
+
 const getInitialState = (): AuthState => {
   if (typeof window === "undefined") {
     return {
@@ -30,15 +48,31 @@ const getInitialState = (): AuthState => {
   }
 
   const token = Cookies.get("accessToken") || null;
-
-  const userStr = localStorage.getItem("user");
   let user: UserProfile | null = null;
-  if (userStr) {
-    try {
-      user = JSON.parse(userStr);
-    } catch {
-      user = null;
+
+  if (token) {
+    const payload = decodeJwtPayload(token);
+    const userStr = localStorage.getItem("user");
+    if (userStr) {
+      try {
+        const parsed = JSON.parse(userStr);
+        const payloadEmail = payload?.email || payload?.userEmail;
+        const payloadRole = payload?.role;
+
+        const emailMatches = !payloadEmail || !parsed.email || payloadEmail.toLowerCase() === parsed.email.toLowerCase();
+        const roleMatches = !payloadRole || !parsed.role || payloadRole === parsed.role;
+
+        if (emailMatches && roleMatches) {
+          user = parsed;
+        } else {
+          clearGreetelyStorage();
+        }
+      } catch {
+        clearGreetelyStorage();
+      }
     }
+  } else {
+    clearGreetelyStorage();
   }
 
   return {
@@ -62,7 +96,12 @@ const authSlice = createSlice({
       }
       state.user = action.payload.user;
       state.isAuthenticated = true;
-      localStorage.setItem("user", JSON.stringify(action.payload.user));
+      try {
+        localStorage.setItem("user", JSON.stringify(action.payload.user));
+        if (action.payload.user.role) {
+          localStorage.setItem("role", action.payload.user.role);
+        }
+      } catch {}
     },
     logout: (state) => {
       const cookieOptions = getAuthCookieOptions();
@@ -85,19 +124,30 @@ const authSlice = createSlice({
           state.token = null;
           state.user = null;
           state.isAuthenticated = false;
-          try {
-            localStorage.removeItem("user");
-          } catch {}
+          clearGreetelyStorage();
         } else {
+          const payload = decodeJwtPayload(cookieToken);
+          const rehydratedUser = action.payload?.auth?.user || state.user;
           const rehydratedToken = action.payload?.auth?.token || state.token;
-          if (rehydratedToken && rehydratedToken !== cookieToken) {
-            // Token changed (user switched account on landing page)
+
+          let isMatch = true;
+          if (rehydratedUser && payload) {
+            const payloadEmail = payload?.email || payload?.userEmail;
+            const payloadRole = payload?.role;
+            if (payloadEmail && rehydratedUser.email && payloadEmail.toLowerCase() !== rehydratedUser.email.toLowerCase()) {
+              isMatch = false;
+            }
+            if (payloadRole && rehydratedUser.role && payloadRole !== rehydratedUser.role) {
+              isMatch = false;
+            }
+          }
+
+          if (!isMatch || (rehydratedToken && rehydratedToken !== cookieToken)) {
+            // Token or user info mismatched!
             state.token = cookieToken;
             state.user = null; // Clear stale user data
             state.isAuthenticated = true;
-            try {
-              localStorage.removeItem("user");
-            } catch {}
+            clearGreetelyStorage();
           } else {
             state.token = cookieToken;
             state.isAuthenticated = true;

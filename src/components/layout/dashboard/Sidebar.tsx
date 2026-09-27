@@ -88,7 +88,7 @@ import { UserRole } from "@/types/auth";
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux/hook";
 import Cookies from "js-cookie";
-import { logout } from "@/redux/features/authSlice";
+import { logout, decodeJwtPayload } from "@/redux/features/authSlice";
 import { useGetMeQuery } from "@/redux/api/authApi";
 import { useDeleteOwnAccountMutation } from "@/redux/api/userApi";
 import { toast } from "sonner";
@@ -114,11 +114,14 @@ export default function Sidebar() {
   const [deleteOwnAccount, { isLoading: isDeleting }] = useDeleteOwnAccountMutation();
 
   useEffect(() => {
-    // ২. ক্লায়েন্ট সাইডে লোড হলে লোকাল স্টোরেজ থেকে রোল সেট করুন
-    const storedRole = localStorage.getItem("role") as UserRole || "user";
-    setRole(storedRole);
+    // Client-side initialization
+    const jwtRole = token ? decodeJwtPayload(token)?.role : null;
+    const initialRole = jwtRole
+      ? (jwtRole === "SUPER_ADMIN" ? "super-admin" : jwtRole === "ORGANIZATION_ADMIN" ? "org-admin" : jwtRole === "DEPARTMENT_ADMIN" ? "dept-admin" : "user")
+      : (localStorage.getItem("role") as UserRole) || "user";
+    setRole(initialRole);
     setMounted(true);
-  }, []);
+  }, [token]);
 
   // Update role dynamically based on logged in user's role from backend
   const getMappedRole = (r: string): UserRole => {
@@ -130,6 +133,8 @@ export default function Sidebar() {
 
   const activeRole: UserRole = currentUser?.role
     ? getMappedRole(currentUser.role)
+    : token
+    ? getMappedRole(decodeJwtPayload(token)?.role || "USER")
     : role;
 
   // ৩. মাউন্ট না হওয়া পর্যন্ত কিছুই রেন্ডার করবেন না বা লোডিং দেখান

@@ -14,12 +14,29 @@ export const getWebsiteUrl = (): string => {
     if (hostname.includes("127.0.0.1")) {
       return "http://127.0.0.1:3041";
     }
+    const parts = hostname.split(".");
+    if (parts.length >= 2) {
+      const rootDomain = parts.slice(-2).join(".");
+      return `${window.location.protocol}//${rootDomain}`;
+    }
   }
-  return "https://greetely.com";
+  return "https://greetcly.com";
 };
 
 export const getApiBaseUrl = (): string => {
-  return process.env.NEXT_PUBLIC_BASE_URL || "https://api.greetely.com/api/v1";
+  if (process.env.NEXT_PUBLIC_BASE_URL) {
+    return process.env.NEXT_PUBLIC_BASE_URL;
+  }
+  if (typeof window !== "undefined") {
+    const hostname = window.location.hostname;
+    if (hostname.includes("greetcly.com")) {
+      return "https://api.greetcly.com/api/v1";
+    }
+    if (hostname.includes("greetely.com")) {
+      return "https://api.greetely.com/api/v1";
+    }
+  }
+  return "https://api.greetcly.com/api/v1";
 };
 
 export const isProductionEnvironment = (): boolean => {
@@ -36,8 +53,20 @@ export const isProductionEnvironment = (): boolean => {
 
 export const getAuthCookieOptions = () => {
   const isProd = isProductionEnvironment();
+  let domain: string | undefined = undefined;
+
+  if (typeof window !== "undefined") {
+    const hostname = window.location.hostname;
+    if (!hostname.includes("localhost") && !hostname.includes("127.0.0.1")) {
+      const parts = hostname.split(".");
+      if (parts.length >= 2) {
+        domain = "." + parts.slice(-2).join(".");
+      }
+    }
+  }
+
   return {
-    domain: isProd ? ".greetely.com" : undefined,
+    domain,
     secure: isProd,
     sameSite: "Lax" as const,
     path: "/",
@@ -50,12 +79,14 @@ export const getAuthCookieOptions = () => {
  */
 export const GREETELY_STORAGE_KEYS = [
   "user",
+  "role",
   "token",
   "refreshToken",
   "accessToken",
   "greetely_theme",
   "greetely_session",
   "persist:auth",
+  "persist:root",
 ];
 
 export const clearGreetelyStorage = () => {
