@@ -82,6 +82,27 @@ const getInitialState = (): AuthState => {
   };
 };
 
+export const removeAuthCookies = () => {
+  if (typeof window === "undefined") return;
+  const cookieOptions = getAuthCookieOptions();
+
+  // Remove host-only cookie
+  Cookies.remove("accessToken", { path: "/" });
+  Cookies.remove("refreshToken", { path: "/" });
+
+  // Remove root domain cookie
+  if (cookieOptions.domain) {
+    Cookies.remove("accessToken", { path: "/", domain: cookieOptions.domain });
+    Cookies.remove("refreshToken", { path: "/", domain: cookieOptions.domain });
+  }
+
+  // Fallbacks for both greetcly.com and greetely.com
+  Cookies.remove("accessToken", { path: "/", domain: ".greetcly.com" });
+  Cookies.remove("refreshToken", { path: "/", domain: ".greetcly.com" });
+  Cookies.remove("accessToken", { path: "/", domain: ".greetely.com" });
+  Cookies.remove("refreshToken", { path: "/", domain: ".greetely.com" });
+};
+
 const authSlice = createSlice({
   name: "auth",
   initialState: getInitialState(),
@@ -104,15 +125,10 @@ const authSlice = createSlice({
       } catch {}
     },
     logout: (state) => {
-      const cookieOptions = getAuthCookieOptions();
-
       state.token = null;
       state.user = null;
       state.isAuthenticated = false;
-      Cookies.remove("accessToken", cookieOptions);
-      Cookies.remove("accessToken", { path: "/" });
-      Cookies.remove("refreshToken", cookieOptions);
-      Cookies.remove("refreshToken", { path: "/" });
+      removeAuthCookies();
       clearGreetelyStorage();
     },
   },

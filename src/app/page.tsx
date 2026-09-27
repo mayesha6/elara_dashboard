@@ -2,7 +2,8 @@
 import { useEffect } from "react";
 import Cookies from "js-cookie";
 import { slugify } from "@/utils/slugify";
-import { getWebsiteUrl } from "@/config/env";
+import { getWebsiteUrl, clearGreetelyStorage } from "@/config/env";
+import { decodeJwtPayload, removeAuthCookies } from "@/redux/features/authSlice";
 
 export default function HomePage() {
   useEffect(() => {
@@ -14,19 +15,14 @@ export default function HomePage() {
     }
 
     try {
-      const base64Url = token.split(".")[1];
-      const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-      const jsonPayload = decodeURIComponent(
-        window
-          .atob(base64)
-          .split("")
-          .map(function (c) {
-            return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-          })
-          .join("")
-      );
+      const payload = decodeJwtPayload(token);
+      if (!payload || !payload.role) {
+        removeAuthCookies();
+        clearGreetelyStorage();
+        window.location.href = `${getWebsiteUrl()}/login`;
+        return;
+      }
 
-      const payload = JSON.parse(jsonPayload);
       const role = payload.role;
 
       let dashboardPath = "/user/dashboard";
@@ -38,7 +34,9 @@ export default function HomePage() {
           const storedUser = localStorage.getItem("user");
           if (storedUser) {
             const parsed = JSON.parse(storedUser);
-            orgName = parsed.companyName || parsed.name || "";
+            if (!payload.email || !parsed.email || payload.email.toLowerCase() === parsed.email.toLowerCase()) {
+              orgName = parsed.companyName || parsed.name || "";
+            }
           }
         } catch (e) {
           console.error("Failed to parse user from localStorage:", e);
@@ -55,8 +53,10 @@ export default function HomePage() {
           const storedUser = localStorage.getItem("user");
           if (storedUser) {
             const parsed = JSON.parse(storedUser);
-            const orgObj = parsed.organizationId;
-            orgName = orgObj?.companyName || orgObj?.name || (typeof orgObj === "string" ? orgObj : "");
+            if (!payload.email || !parsed.email || payload.email.toLowerCase() === parsed.email.toLowerCase()) {
+              const orgObj = parsed.organizationId;
+              orgName = orgObj?.companyName || orgObj?.name || (typeof orgObj === "string" ? orgObj : "");
+            }
           }
         } catch (e) {
           console.error("Failed to parse user from localStorage:", e);
