@@ -14,7 +14,9 @@ const baseQuery = fetchBaseQuery({
   baseUrl: getApiBaseUrl(),
   credentials: "include",
   prepareHeaders: (headers, { getState }) => {
-    const token = (getState() as RootState).auth.token || Cookies.get("accessToken");
+    const cookieToken = Cookies.get("accessToken");
+    const stateToken = (getState() as RootState).auth?.token;
+    const token = cookieToken || stateToken;
 
     if (token) {
       headers.set("authorization", `Bearer ${token}`);

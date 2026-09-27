@@ -17,7 +17,7 @@ export default function SubscriptionGuard({ children }: { children: React.ReactN
   const pathname = usePathname();
   const orgSlug = params?.orgSlug as string;
   const dispatch = useDispatch();
-  const token = useSelector((state: RootState) => state.auth?.token) || Cookies.get("accessToken");
+  const token = Cookies.get("accessToken") || useSelector((state: RootState) => state.auth?.token);
 
   const landingPageUrl = getWebsiteUrl();
   const [hasSubscriptionError, setHasSubscriptionError] = useState(false);

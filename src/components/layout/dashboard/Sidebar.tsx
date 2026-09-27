@@ -101,7 +101,7 @@ export default function Sidebar() {
   const dispatch = useAppDispatch();
 
   // Get current user profile from RTK Query / auth state
-  const token = useAppSelector((state) => state.auth?.token) || Cookies.get("accessToken");
+  const token = Cookies.get("accessToken") || useAppSelector((state) => state.auth?.token);
   const { data: profileData } = useGetMeQuery(undefined, { skip: !token });
   const currentUser = profileData?.data;
 

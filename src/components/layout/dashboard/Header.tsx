@@ -53,7 +53,7 @@ export default function Header() {
   const websiteUrl = getWebsiteUrl();
   const router = useRouter();
   const dispatch = useDispatch();
-  const token = useSelector((state: RootState) => state.auth?.token) || Cookies.get("accessToken");
+  const token = Cookies.get("accessToken") || useSelector((state: RootState) => state.auth?.token);
   const { data: profileData, isLoading: isProfileLoading } = useGetMeQuery(undefined, { skip: !token });
   
   const user = profileData?.data;

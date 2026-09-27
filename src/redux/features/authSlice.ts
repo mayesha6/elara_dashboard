@@ -78,12 +78,30 @@ const authSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase("persist/REHYDRATE", (state: AuthState) => {
+    builder.addCase("persist/REHYDRATE", (state: AuthState, action: any) => {
       if (typeof window !== "undefined") {
-        const token = Cookies.get("accessToken");
-        if (token) {
-          state.token = token;
-          state.isAuthenticated = true;
+        const cookieToken = Cookies.get("accessToken");
+        if (!cookieToken) {
+          state.token = null;
+          state.user = null;
+          state.isAuthenticated = false;
+          try {
+            localStorage.removeItem("user");
+          } catch {}
+        } else {
+          const rehydratedToken = action.payload?.auth?.token || state.token;
+          if (rehydratedToken && rehydratedToken !== cookieToken) {
+            // Token changed (user switched account on landing page)
+            state.token = cookieToken;
+            state.user = null; // Clear stale user data
+            state.isAuthenticated = true;
+            try {
+              localStorage.removeItem("user");
+            } catch {}
+          } else {
+            state.token = cookieToken;
+            state.isAuthenticated = true;
+          }
         }
       }
     });

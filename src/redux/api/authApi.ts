@@ -1,4 +1,5 @@
 import { baseApi } from "./baseApi";
+import { setUser } from "../features/authSlice";
 
 export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -6,6 +7,16 @@ export const authApi = baseApi.injectEndpoints({
     getMe: builder.query({
       query: () => ({ url: "/user/me" }),
       providesTags: ["User"],
+      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          if (data?.data) {
+            dispatch(setUser({ user: data.data }));
+          }
+        } catch {
+          // Ignore errors
+        }
+      },
     }),
 
     changePassword: builder.mutation({
