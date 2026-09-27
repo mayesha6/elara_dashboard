@@ -22,6 +22,10 @@ const baseQuery = fetchBaseQuery({
       headers.set("authorization", `Bearer ${token}`);
     }
 
+    // Prevent browser HTTP caching for all API queries
+    headers.set("Cache-Control", "no-cache, no-store, must-revalidate");
+    headers.set("Pragma", "no-cache");
+
     return headers;
   },
 });
@@ -77,6 +81,7 @@ const baseQueryWithRefreshToken: BaseQueryFn<
 
 export const baseApi = createApi({
   reducerPath: "baseApi",
+  refetchOnMountOrArgChange: true,
   tagTypes: [
     "User",
     "Recognition",
