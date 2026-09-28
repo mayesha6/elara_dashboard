@@ -65,12 +65,30 @@ const baseQueryWithRefreshToken: BaseQueryFn<
     }
   }
 
-  // Intercept 402 Payment Required or 403 Forbidden related to subscription
-  if (result?.error?.status === 402 || result?.error?.status === 403) {
+  // Intercept 402 Payment Required or 403 Forbidden specifically related to subscription
+  if (result?.error?.status === 402) {
     if (typeof window !== "undefined") {
       window.dispatchEvent(
         new CustomEvent("subscription_required", { detail: result.error })
       );
+    }
+  } else if (result?.error?.status === 403) {
+    const errorData = result.error.data as { message?: string; code?: string; type?: string } | undefined;
+    const errMsg = (errorData?.message || "").toLowerCase();
+    const errCode = (errorData?.code || "").toLowerCase();
+    const isSubError = errCode.includes("subscription") || errMsg.includes("subscription") || errMsg.includes("plan");
+
+    if (typeof window !== "undefined") {
+      if (isSubError) {
+        window.dispatchEvent(
+          new CustomEvent("subscription_required", { detail: result.error })
+        );
+      } else {
+        // Dispatch custom event for 403 Authorization / Cross-Org violation
+        window.dispatchEvent(
+          new CustomEvent("authorization_forbidden", { detail: result.error })
+        );
+      }
     }
   }
 

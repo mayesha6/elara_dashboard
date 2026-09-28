@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Search, Bell, Menu, Award, Gift, MessageSquare, ShieldAlert, LogOut } from "lucide-react";
+import { Bell, Award, Gift, MessageSquare, ShieldAlert, LogOut } from "lucide-react";
 import Image from "next/image";
 import logo from "@/assets/images/logo.png";
 import Link from "next/link";

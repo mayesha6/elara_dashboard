@@ -1,15 +1,14 @@
 "use client";
 
 import { useGetMeQuery } from "@/redux/api/authApi";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { logout } from "@/redux/features/authSlice";
 import { useRouter, useParams, usePathname } from "next/navigation";
-import Cookies from "js-cookie";
 import { ShieldAlert, LogOut, ArrowUpRight } from "lucide-react";
-import { RootState } from "@/redux/store";
 import { useEffect, useState } from "react";
 import { slugify } from "@/utils/slugify";
 import { getWebsiteUrl } from "@/config/env";
+import { toast } from "sonner";
 
 export default function SubscriptionGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -17,21 +16,27 @@ export default function SubscriptionGuard({ children }: { children: React.ReactN
   const pathname = usePathname();
   const orgSlug = params?.orgSlug as string;
   const dispatch = useDispatch();
-  const reduxToken = useSelector((state: RootState) => state.auth?.token);
-  const token = Cookies.get("accessToken") || reduxToken;
 
   const landingPageUrl = getWebsiteUrl();
   const [hasSubscriptionError, setHasSubscriptionError] = useState(false);
 
-  // Subscribe to custom 402/403 subscription events from baseApi
+  // Subscribe to custom 402/403 subscription and authorization events from baseApi
   useEffect(() => {
     const handleSubscriptionError = () => {
       setHasSubscriptionError(true);
     };
 
+    const handleForbiddenError = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      const msg = detail?.data?.message || "Forbidden: You do not have permission to perform this action.";
+      toast.error(msg);
+    };
+
     window.addEventListener("subscription_required", handleSubscriptionError);
+    window.addEventListener("authorization_forbidden", handleForbiddenError);
     return () => {
       window.removeEventListener("subscription_required", handleSubscriptionError);
+      window.removeEventListener("authorization_forbidden", handleForbiddenError);
     };
   }, []);
 
@@ -79,11 +84,11 @@ export default function SubscriptionGuard({ children }: { children: React.ReactN
     }
   }, [user, expectedSlug, pathname, orgSlug, router]);
 
-  // Check if user is Org Admin and subscription is not active or trialing, or if API returned 402/403
+  // Check if user is Org Admin and subscription is not active or trialing, or if API returned 402 Subscription Required
   const isOrgAdmin = user?.role === "ORGANIZATION_ADMIN";
   const isApiSubscriptionError =
     hasSubscriptionError ||
-    (error && "status" in error && (error.status === 402 || error.status === 403));
+    (error && "status" in error && error.status === 402);
 
   const isSubscriptionInactive =
     isApiSubscriptionError ||
