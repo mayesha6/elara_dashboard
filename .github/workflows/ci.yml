@@ -25,7 +25,6 @@ jobs:
         run: npm ci
 
       - name: Secret Scanning Check
-        name: Ensure no committed secret files exist
         run: |
           if [ -f .env.local ]; then
             echo "Error: .env.local should not be committed!"

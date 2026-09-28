@@ -96,9 +96,7 @@ export const removeAuthCookies = () => {
     Cookies.remove("refreshToken", { path: "/", domain: cookieOptions.domain });
   }
 
-  // Fallbacks for both greetcly.com and greetely.com
-  Cookies.remove("accessToken", { path: "/", domain: ".greetcly.com" });
-  Cookies.remove("refreshToken", { path: "/", domain: ".greetcly.com" });
+  // Fallback for greetely.com
   Cookies.remove("accessToken", { path: "/", domain: ".greetely.com" });
   Cookies.remove("refreshToken", { path: "/", domain: ".greetely.com" });
 };

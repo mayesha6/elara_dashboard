@@ -20,7 +20,7 @@ export const getWebsiteUrl = (): string => {
       return `${window.location.protocol}//${rootDomain}`;
     }
   }
-  return "https://greetcly.com";
+  return "https://greetely.com";
 };
 
 export const getApiBaseUrl = (): string => {
@@ -29,14 +29,11 @@ export const getApiBaseUrl = (): string => {
   }
   if (typeof window !== "undefined") {
     const hostname = window.location.hostname;
-    if (hostname.includes("greetcly.com")) {
-      return "https://api.greetcly.com/api/v1";
-    }
     if (hostname.includes("greetely.com")) {
       return "https://api.greetely.com/api/v1";
     }
   }
-  return "https://api.greetcly.com/api/v1";
+  return "https://api.greetely.com/api/v1";
 };
 
 export const isProductionEnvironment = (): boolean => {
