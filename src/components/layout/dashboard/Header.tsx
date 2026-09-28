@@ -58,8 +58,7 @@ export default function Header() {
   const { data: profileData, isLoading: isProfileLoading } = useGetMeQuery(undefined);
   
   const user = profileData?.data;
-  const tokenKeep = Cookies.get("accessToken");
-  const isAuthenticated = !!tokenKeep && !!user;
+  const isAuthenticated = !!token || !!user;
 
   // Profile Menu Dropdown State
   const [showProfileMenu, setShowProfileMenu] = useState(false);
