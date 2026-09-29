@@ -1,66 +1,60 @@
 "use client";
 import { useEffect } from "react";
-import Cookies from "js-cookie";
+import { useGetMeQuery } from "@/redux/api/authApi";
 import { slugify } from "@/utils/slugify";
 import { getWebsiteUrl, clearGreetelyStorage } from "@/config/env";
 import { removeAuthCookies } from "@/redux/features/authSlice";
 
 export default function HomePage() {
+  const { data: profileRes, isError, isLoading } = useGetMeQuery(undefined);
+
   useEffect(() => {
-    const token = Cookies.get("accessToken");
-    if (!token) {
-      const landingPageUrl = getWebsiteUrl();
-      window.location.href = `${landingPageUrl}/login`;
+    if (isLoading) return;
+
+    if (isError || !profileRes?.data) {
+      removeAuthCookies();
+      clearGreetelyStorage();
+      window.location.href = `${getWebsiteUrl()}/login`;
       return;
     }
 
-    try {
-      const storedUser = localStorage.getItem("user");
-      let parsedUser: { role?: string; companyName?: string; name?: string; organizationId?: any } | null = null;
-      if (storedUser) {
-        try {
-          parsedUser = JSON.parse(storedUser);
-        } catch (e) {
-          console.error("Failed to parse user from localStorage:", e);
-        }
-      }
+    const parsedUser = profileRes.data;
+    const role = parsedUser.role;
 
-      const role = parsedUser?.role || localStorage.getItem("role");
-      if (!role) {
-        removeAuthCookies();
-        clearGreetelyStorage();
-        window.location.href = `${getWebsiteUrl()}/login`;
-        return;
-      }
-
-      let dashboardPath = "/user/dashboard";
-      if (role === "SUPER_ADMIN") {
-        dashboardPath = "/super-admin";
-      } else if (role === "ORGANIZATION_ADMIN") {
-        const orgName = parsedUser?.companyName || parsedUser?.name || "";
-        if (orgName) {
-          dashboardPath = `/${slugify(orgName)}`;
-        } else {
-          dashboardPath = "/org-admin";
-        }
-      } else if (role === "DEPARTMENT_ADMIN") {
-        const orgObj = parsedUser?.organizationId;
-        const orgName = orgObj?.companyName || orgObj?.name || (typeof orgObj === "string" ? orgObj : "");
-        if (orgName) {
-          dashboardPath = `/${slugify(orgName)}/dept-admin/dashboard`;
-        } else {
-          dashboardPath = "/dept-admin/dashboard";
-        }
-      } else if (role === "USER") {
-        dashboardPath = "/user/dashboard";
-      }
-
-      window.location.href = dashboardPath;
-    } catch (err) {
-      console.error("Session routing failed:", err);
-      window.location.href = "/user/dashboard";
+    if (!role) {
+      removeAuthCookies();
+      clearGreetelyStorage();
+      window.location.href = `${getWebsiteUrl()}/login`;
+      return;
     }
-  }, []);
+
+    let dashboardPath = "/user/dashboard";
+    if (role === "SUPER_ADMIN") {
+      dashboardPath = "/super-admin";
+    } else if (role === "ORGANIZATION_ADMIN") {
+      const orgName = parsedUser.companyName || parsedUser.name || "";
+      if (orgName) {
+        dashboardPath = `/${slugify(orgName)}`;
+      } else {
+        dashboardPath = "/org-admin";
+      }
+    } else if (role === "DEPARTMENT_ADMIN") {
+      const orgObj = parsedUser.organizationId;
+      const orgName =
+        orgObj?.companyName ||
+        orgObj?.name ||
+        (typeof orgObj === "string" ? orgObj : "");
+      if (orgName) {
+        dashboardPath = `/${slugify(orgName)}/dept-admin/dashboard`;
+      } else {
+        dashboardPath = "/dept-admin/dashboard";
+      }
+    } else if (role === "USER") {
+      dashboardPath = "/user/dashboard";
+    }
+
+    window.location.href = dashboardPath;
+  }, [profileRes, isError, isLoading]);
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50">

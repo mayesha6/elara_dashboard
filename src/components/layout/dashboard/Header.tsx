@@ -17,7 +17,6 @@ import {
   useMarkAsReadMutation, 
   useMarkAllAsReadMutation 
 } from "@/redux/api/notificationApi";
-import Cookies from "js-cookie";
 import { getWebsiteUrl } from "@/config/env";
 
 const getNotificationIcon = (type: string) => {
@@ -54,11 +53,10 @@ export default function Header() {
   const router = useRouter();
   const dispatch = useDispatch();
   const reduxToken = useSelector((state: RootState) => state.auth?.token);
-  const token = Cookies.get("accessToken") || reduxToken;
   const { data: profileData, isLoading: isProfileLoading } = useGetMeQuery(undefined);
   
   const user = profileData?.data;
-  const isAuthenticated = !!token || !!user;
+  const isAuthenticated = !!reduxToken || !!user;
 
   // Profile Menu Dropdown State
   const [showProfileMenu, setShowProfileMenu] = useState(false);

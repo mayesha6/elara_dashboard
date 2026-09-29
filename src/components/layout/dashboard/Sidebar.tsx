@@ -111,9 +111,6 @@ export default function Sidebar() {
   const [deleteOwnAccount, { isLoading: isDeleting }] = useDeleteOwnAccountMutation();
 
   useEffect(() => {
-    // Client-side initialization using server-validated user role or stored role
-    const initialRole = (localStorage.getItem("role") as UserRole) || "user";
-    setRole(initialRole);
     setMounted(true);
   }, []);
 
