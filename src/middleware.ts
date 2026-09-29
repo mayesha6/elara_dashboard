@@ -13,16 +13,7 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const accessToken = request.cookies.get("accessToken")?.value;
-  const refreshToken = request.cookies.get("refreshToken")?.value;
-  const hasAuthToken = !!(accessToken || refreshToken);
-
-  // If user hits dashboard routes without any auth cookies, redirect to login
-  if (!hasAuthToken && pathname !== "/") {
-    const websiteUrl = process.env.NEXT_PUBLIC_WEBSITE_URL || "https://greetely.com";
-    return NextResponse.redirect(`${websiteUrl}/login`);
-  }
-
+  // Allow client-side auth state and /user/me to validate session cleanly
   return NextResponse.next();
 }
 
