@@ -4,7 +4,6 @@ import type { NextRequest } from "next/server";
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Static assets, _next internal routes, and public paths bypass middleware check
   if (
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api") ||
@@ -13,19 +12,37 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Allow client-side auth state and /user/me to validate session cleanly
+  const authPaths = [
+    "/login",
+    "/forget-password",
+    "/reset-password",
+    "/otp-verify",
+    "/create-password",
+  ];
+
+  const isAuthPage = authPaths.some(
+    (path) => pathname === path || pathname.startsWith(path + "/")
+  );
+
+  const accessToken = request.cookies.get("accessToken")?.value;
+  const refreshToken = request.cookies.get("refreshToken")?.value;
+  const hasAuthToken = Boolean(accessToken || refreshToken);
+
+  if (!isAuthPage && !hasAuthToken) {
+    const loginUrl = new URL("/login", request.url);
+    loginUrl.searchParams.set("redirect", pathname);
+    return NextResponse.redirect(loginUrl);
+  }
+
+  if (isAuthPage && hasAuthToken) {
+    return NextResponse.redirect(new URL("/", request.url));
+  }
+
   return NextResponse.next();
 }
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     */
     "/((?!api|_next/static|_next/image|favicon.ico).*)",
   ],
 };

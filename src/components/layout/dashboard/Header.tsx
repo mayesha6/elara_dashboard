@@ -52,11 +52,11 @@ export default function Header() {
   const websiteUrl = getWebsiteUrl();
   const router = useRouter();
   const dispatch = useDispatch();
-  const reduxToken = useSelector((state: RootState) => state.auth?.token);
+  // Auth tokens managed via HttpOnly cookies
   const { data: profileData, isLoading: isProfileLoading } = useGetMeQuery(undefined);
   
   const user = profileData?.data;
-  const isAuthenticated = !!reduxToken || !!user;
+  const isAuthenticated = !!user;
 
   // Profile Menu Dropdown State
   const [showProfileMenu, setShowProfileMenu] = useState(false);

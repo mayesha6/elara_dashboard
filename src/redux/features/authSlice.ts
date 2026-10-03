@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { clearGreetelyStorage } from "@/config/env";
+import { clearGreetelyStorage, getApiBaseUrl } from "@/config/env";
 
 export interface UserProfile {
   _id?: string;
@@ -14,14 +14,12 @@ export interface UserProfile {
 }
 
 interface AuthState {
-  token: string | null;
   user: UserProfile | null;
   isAuthenticated: boolean;
 }
 
 const getInitialState = (): AuthState => {
   return {
-    token: null,
     user: null,
     isAuthenticated: false,
   };
@@ -29,27 +27,32 @@ const getInitialState = (): AuthState => {
 
 export const removeAuthCookies = () => {
   if (typeof window === "undefined") return;
-  // Expire cookies via document.cookie without requiring js-cookie dependency
-  document.cookie = "accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;";
-  document.cookie = "refreshToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;";
+};
+
+export const logoutBackendSession = async () => {
+  if (typeof window === "undefined") return;
+  try {
+    await fetch(getApiBaseUrl() + "/auth/logout", {
+      method: "POST",
+      credentials: "include",
+    });
+  } catch {
+    // Ignore network failure on logout
+  }
 };
 
 const authSlice = createSlice({
   name: "auth",
   initialState: getInitialState(),
   reducers: {
-    setUser: (state, action: PayloadAction<{ token?: string; user: UserProfile }>) => {
-      if (action.payload.token) {
-        state.token = action.payload.token;
-      }
+    setUser: (state, action: PayloadAction<{ user: UserProfile }>) => {
       state.user = action.payload.user;
       state.isAuthenticated = true;
     },
     logout: (state) => {
-      state.token = null;
       state.user = null;
       state.isAuthenticated = false;
-      removeAuthCookies();
+      logoutBackendSession();
       clearGreetelyStorage();
     },
   },
