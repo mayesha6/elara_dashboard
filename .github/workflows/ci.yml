@@ -37,6 +37,9 @@ jobs:
       - name: TypeScript Strict Typecheck
         run: npx tsc --noEmit
 
+      - name: Run Automated Tests
+        run: npm test
+
   production-build-check:
     name: Production Build Verification
     runs-on: ubuntu-latest
@@ -57,7 +60,7 @@ jobs:
 
       - name: Build Production Bundle
         env:
-          NEXT_PUBLIC_BASE_URL: "https://api.greetely.com/api/v1"
+          NEXT_PUBLIC_BASE_URL: "https: //api.greetely.com/api/v1"
           NEXT_PUBLIC_WEBSITE_URL: "https://greetely.com"
           NEXTAUTH_URL: "https://dashboard.greetely.com"
         run: npm run build
