@@ -35,6 +35,9 @@ jobs:
       - name: Run Automated Tests
         run: npm test
 
+      - name: Run Production Dependency Audit
+        run: npm audit --omit=dev --audit-level=high
+
       - name: Run Production Build
         env:
           NEXT_PUBLIC_BASE_URL: "https://api.greetely.com/api/v1"
