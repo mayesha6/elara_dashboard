@@ -121,7 +121,7 @@ export default function Header() {
 
   const handleLogout = () => {
     dispatch(logout());
-    window.location.href = `${websiteUrl}/login`;
+    window.location.replace(`${websiteUrl}/login`);
   };
 
   return (

@@ -89,7 +89,7 @@ export default function Sidebar() {
       await logoutUser(undefined).unwrap().catch(() => {});
     } finally {
       dispatch(logout());
-      window.location.href = "https://greetely.com/login";
+      window.location.replace("https://greetely.com/login");
     }
   };
 

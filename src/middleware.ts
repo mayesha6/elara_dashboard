@@ -28,17 +28,24 @@ export function middleware(request: NextRequest) {
   const refreshToken = request.cookies.get("refreshToken")?.value;
   const hasAuthToken = Boolean(accessToken || refreshToken);
 
+  let response: NextResponse;
+
   if (!isAuthPage && !hasAuthToken) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("redirect", pathname);
-    return NextResponse.redirect(loginUrl);
+    response = NextResponse.redirect(loginUrl);
+  } else if (isAuthPage && hasAuthToken) {
+    response = NextResponse.redirect(new URL("/", request.url));
+  } else {
+    response = NextResponse.next();
   }
 
-  if (isAuthPage && hasAuthToken) {
-    return NextResponse.redirect(new URL("/", request.url));
-  }
+  // Disable bfcache storing of auth state
+  response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+  response.headers.set("Pragma", "no-cache");
+  response.headers.set("Expires", "0");
 
-  return NextResponse.next();
+  return response;
 }
 
 export const config = {
