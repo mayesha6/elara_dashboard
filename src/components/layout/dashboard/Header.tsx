@@ -54,7 +54,7 @@ export default function Header() {
   const dispatch = useDispatch();
   // Auth tokens managed via HttpOnly cookies
   const { data: profileData, isLoading: isProfileLoading } = useGetMeQuery(undefined);
-  const [logoutUser] = useLogoutUserMutation();
+  const [logoutUser] = useLogoutUserMutation(undefined);
   
   const user = profileData?.data;
   const isAuthenticated = !!user;
