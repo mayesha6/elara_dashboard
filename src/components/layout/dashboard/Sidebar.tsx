@@ -7,6 +7,7 @@
 
 // export default function Sidebar() {
 //   const pathname = usePathname();
+  const [logoutUser] = useLogoutUserMutation();
 
 //   const navItems = [
 //     { name: "Dashboard", href: "/user/dashboard", icon: LayoutDashboard },
@@ -88,6 +89,7 @@ import { UserRole } from "@/types/auth";
 import { useEffect, useState } from "react";
 import { useAppDispatch } from "@/redux/hook";
 import { logout } from "@/redux/features/authSlice";
+import { useLogoutUserMutation } from "@/redux/api/authApi";
 import { useGetMeQuery } from "@/redux/api/authApi";
 import { useDeleteOwnAccountMutation } from "@/redux/api/userApi";
 import { toast } from "sonner";

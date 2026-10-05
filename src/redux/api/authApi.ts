@@ -4,6 +4,14 @@ import { setUser } from "../features/authSlice";
 export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
 
+    logoutUser: builder.mutation({
+      query: () => ({
+        url: "/auth/logout",
+        method: "POST",
+      }),
+      invalidatesTags: ["User"],
+    }),
+
     getMe: builder.query({
       query: () => ({ url: "/user/me" }),
       providesTags: ["User"],
@@ -41,4 +49,4 @@ export const authApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useGetMeQuery, useChangePasswordMutation, useUpdateMyProfileMutation } = authApi;
+export const { useGetMeQuery, useLogoutUserMutation, useChangePasswordMutation, useUpdateMyProfileMutation } = authApi;
