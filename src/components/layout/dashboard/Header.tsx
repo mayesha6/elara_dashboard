@@ -9,8 +9,8 @@ import { useRouter } from "next/navigation";
 
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/redux/store";
-import { logout } from "@/redux/features/authSlice";
-import { useGetMeQuery, useLogoutUserMutation } from "@/redux/api/authApi";
+import { logout, logoutBackendSession } from "@/redux/features/authSlice";
+import { useGetMeQuery } from "@/redux/api/authApi";
 import { 
   useGetNotificationsQuery, 
   useGetUnreadCountQuery, 
@@ -54,7 +54,6 @@ export default function Header() {
   const dispatch = useDispatch();
   // Auth tokens managed via HttpOnly cookies
   const { data: profileData, isLoading: isProfileLoading } = useGetMeQuery(undefined);
-  const [logoutUser] = useLogoutUserMutation(undefined);
   
   const user = profileData?.data;
   const isAuthenticated = !!user;
@@ -119,9 +118,13 @@ export default function Header() {
     }
   };
 
-  const handleLogout = () => {
-    dispatch(logout());
-    window.location.replace(`${websiteUrl}/login`);
+  const handleLogout = async () => {
+    try {
+      await logoutBackendSession();
+    } finally {
+      dispatch(logout());
+      window.location.replace(`${websiteUrl}/login`);
+    }
   };
 
   return (

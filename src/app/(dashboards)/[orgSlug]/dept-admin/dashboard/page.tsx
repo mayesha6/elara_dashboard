@@ -110,7 +110,7 @@ export default function DepartmentAdminDashboard() {
                 name,
                 email: data.email,
                 department: data.department || "Engineering",
-                password: data.password || "DefaultPassword123!",
+                password: data.password,
             }).unwrap();
 
             const initialPoints = Number(data.points);

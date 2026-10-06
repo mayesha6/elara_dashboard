@@ -84,7 +84,7 @@ export default function AdminAccessPage() {
                 name: data.name,
                 email: data.email,
                 phone: data.phone,
-                password: data.password || "DefaultPassword123!",
+                password: data.password,
                 role: "DEPARTMENT_ADMIN",
             }).unwrap();
             setIsAddAdminModalOpen(false);

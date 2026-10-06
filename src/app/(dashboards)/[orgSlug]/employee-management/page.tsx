@@ -99,7 +99,7 @@ export default function EmployeeManagementPage() {
                 name,
                 email: data.email,
                 department: data.department,
-                password: data.password || "DefaultPassword123!",
+                password: data.password,
             }).unwrap();
 
             const initialPoints = Number(data.points);

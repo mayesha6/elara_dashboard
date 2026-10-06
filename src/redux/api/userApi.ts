@@ -1,4 +1,5 @@
 import { baseApi } from "./baseApi";
+import { requireStrongPassword } from "@/utils/passwordPolicy";
 
 export const userApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -54,11 +55,14 @@ export const userApi = baseApi.injectEndpoints({
     }),
 
     createUser: builder.mutation({
-      query: (data) => ({
-        url: "/user/create",
-        method: "POST",
-        body: data,
-      }),
+      query: (data) => {
+        requireStrongPassword(data?.password);
+        return {
+          url: "/user/create",
+          method: "POST",
+          body: data,
+        };
+      },
       invalidatesTags: ["User"],
     }),
 

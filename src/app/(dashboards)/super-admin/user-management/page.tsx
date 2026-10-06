@@ -95,7 +95,7 @@ export default function EmployeeManagementPage() {
         name: data.name,
         email: data.email,
         role: data.role,
-        password: data.password || "DefaultPassword123!",
+        password: data.password,
         department: data.role === "SUPER_ADMIN" ? "Administration" : (data.department || "Engineering"),
       }).unwrap();
       setIsAddEmployeeModalOpen(false);

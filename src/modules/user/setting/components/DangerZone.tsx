@@ -4,7 +4,7 @@ import { useState } from "react";
 import { AlertTriangle } from "lucide-react";
 import { useDeleteOwnAccountMutation } from "@/redux/api/userApi";
 import { useAppDispatch } from "@/redux/hook";
-import { logout } from "@/redux/features/authSlice";
+import { logout, logoutBackendSession } from "@/redux/features/authSlice";
 import { useGetMeQuery } from "@/redux/api/authApi";
 import { toast } from "sonner";
 import DeleteConfirmationModal from "@/components/common/DeleteConfirmationModal";
@@ -20,16 +20,20 @@ export default function DangerZone() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteOwnAccount, { isLoading: isDeleting }] = useDeleteOwnAccountMutation();
 
-  const handleLogout = () => {
-    dispatch(logout());
-    window.location.href = `${getWebsiteUrl()}/login`;
+  const handleLogout = async () => {
+    try {
+      await logoutBackendSession();
+    } finally {
+      dispatch(logout());
+      window.location.href = `${getWebsiteUrl()}/login`;
+    }
   };
 
   const handleDeleteAccount = async () => {
     try {
       await deleteOwnAccount(undefined).unwrap();
       toast.success("Account deleted successfully.");
-      handleLogout();
+      await handleLogout();
     } catch (error: unknown) {
       toast.error(formatErrorMessage(error, "Failed to delete account. Please try again."));
     } finally {

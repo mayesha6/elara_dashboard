@@ -3,6 +3,32 @@ import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  const nonce = btoa(crypto.randomUUID());
+  const isDevelopment = process.env.NODE_ENV !== "production";
+  const connectSources = [
+    "'self'",
+    "https://api.greetely.com",
+    "https://greetely.com",
+    "https://dashboard.greetely.com",
+    "https://api.stripe.com",
+    "wss://api.greetely.com",
+    ...(isDevelopment ? ["http://localhost:*", "ws://localhost:*"] : []),
+  ].join(" ");
+  const contentSecurityPolicy = [
+    "default-src 'self'",
+    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${isDevelopment ? " 'unsafe-eval'" : ""}`,
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data: https: blob:",
+    "font-src 'self' data: https:",
+    `connect-src ${connectSources}`,
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    "frame-ancestors 'none'",
+  ].join("; ");
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-nonce", nonce);
+  requestHeaders.set("Content-Security-Policy", contentSecurityPolicy);
 
   if (
     pathname.startsWith("/_next") ||
@@ -37,13 +63,16 @@ export function middleware(request: NextRequest) {
   } else if (isAuthPage && hasAuthToken) {
     response = NextResponse.redirect(new URL("/", request.url));
   } else {
-    response = NextResponse.next();
+    response = NextResponse.next({
+      request: { headers: requestHeaders },
+    });
   }
 
   // Disable bfcache storing of auth state
   response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
   response.headers.set("Pragma", "no-cache");
   response.headers.set("Expires", "0");
+  response.headers.set("Content-Security-Policy", contentSecurityPolicy);
 
   return response;
 }

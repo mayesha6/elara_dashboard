@@ -6,6 +6,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { useChangePasswordMutation } from "@/redux/api/authApi";
 import { toast } from "sonner";
 import { formatErrorMessage } from "@/utils/formatError";
+import { isStrongPassword, STRONG_PASSWORD_MESSAGE } from "@/utils/passwordPolicy";
 
 
 export default function ChangePassword() {
@@ -53,8 +54,8 @@ export default function ChangePassword() {
       return toast.error("All fields are required.");
     }
 
-    if (newPassword.length < 6) {
-      return toast.error("New password must be at least 6 characters long.");
+    if (!isStrongPassword(newPassword)) {
+      return toast.error(STRONG_PASSWORD_MESSAGE);
     }
 
     if (newPassword !== confirmPassword) {

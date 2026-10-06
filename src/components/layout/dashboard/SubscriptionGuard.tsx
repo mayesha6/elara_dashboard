@@ -2,7 +2,7 @@
 
 import { useGetMeQuery } from "@/redux/api/authApi";
 import { useDispatch } from "react-redux";
-import { logout } from "@/redux/features/authSlice";
+import { logout, logoutBackendSession } from "@/redux/features/authSlice";
 import { useRouter, useParams, usePathname } from "next/navigation";
 import { ShieldAlert, LogOut, ArrowUpRight } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -96,9 +96,13 @@ export default function SubscriptionGuard({ children }: { children: React.ReactN
       user?.subscriptionStatus !== "ACTIVE" &&
       user?.subscriptionStatus !== "TRIAL");
 
-  const handleLogout = () => {
-    dispatch(logout());
-    window.location.href = `${landingPageUrl}/login`;
+  const handleLogout = async () => {
+    try {
+      await logoutBackendSession();
+    } finally {
+      dispatch(logout());
+      window.location.href = `${landingPageUrl}/login`;
+    }
   };
 
   const handleUpgrade = () => {
