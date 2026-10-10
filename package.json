@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start -p 3010",
     "lint": "eslint .",
-    "test": "jest",
+    "test": "jest --testPathIgnorePatterns=tests/e2e",
     "test:watch": "jest --watch",
     "test:e2e": "playwright test"
   },
