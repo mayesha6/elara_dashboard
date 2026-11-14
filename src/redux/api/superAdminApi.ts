@@ -10,10 +10,24 @@ export const superAdminApi = baseApi.injectEndpoints({
       providesTags: ["User", "Recognition", "Reward", "Claim"],
     }),
 
-    deleteOrganization: builder.mutation<any, string>({
-      query: (id) => ({
-        url: `/user/${id}`,
-        method: "DELETE",
+    deleteOrganization: builder.mutation<any, string | { id: string; reason?: string }>({
+      query: (arg) => {
+        const id = typeof arg === "string" ? arg : arg.id;
+        const body = typeof arg === "object" && arg.reason ? { reason: arg.reason } : undefined;
+        return {
+          url: `/user/${id}`,
+          method: "DELETE",
+          body,
+        };
+      },
+      invalidatesTags: ["User"],
+    }),
+
+    restoreOrganization: builder.mutation<any, { id: string; reason?: string }>({
+      query: ({ id, reason }) => ({
+        url: `/user/${id}/restore`,
+        method: "POST",
+        body: reason ? { reason } : {},
       }),
       invalidatesTags: ["User"],
     }),
@@ -48,6 +62,7 @@ export const superAdminApi = baseApi.injectEndpoints({
 export const {
   useGetSuperAdminDashboardQuery,
   useDeleteOrganizationMutation,
+  useRestoreOrganizationMutation,
   useUpdateOrganizationStatusMutation,
   useApproveOrganizationMutation,
   useRejectOrganizationMutation,

@@ -1,7 +1,7 @@
 "use client";
-import { Eye, Trash2, Ban, CheckCircle, Check, X } from "lucide-react";
+import { Eye, Trash2, Ban, CheckCircle, Check, X, RotateCcw } from "lucide-react";
 
-export default function OrganizationTable({ orgs, onView, onSuspend, onDelete, onApprove, onReject }: any) {
+export default function OrganizationTable({ orgs, onView, onSuspend, onDelete, onRestore, onApprove, onReject }: any) {
   return (
     <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
       <table className="w-full text-left">
@@ -21,73 +21,101 @@ export default function OrganizationTable({ orgs, onView, onSuspend, onDelete, o
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100">
-          {orgs.map((org: any) => (
-            <tr key={org._id || org.id} className="hover:bg-gray-50/50 transition-colors">
-              <td className="px-6 py-4 text-sm font-medium text-gray-900">{org.companyName || "N/A"}</td>
-              <td className="px-6 py-4 text-sm text-gray-600">{org.name}</td>
-              <td className="px-6 py-4 text-sm text-gray-600">{org.phone || "N/A"}</td>
-              <td className="px-6 py-4 text-sm text-gray-600">{org.email || "N/A"}</td>
-              <td className="px-6 py-4"><span className="px-3 py-1 rounded-full bg-indigo-50 text-indigo-600 text-xs font-medium">{org.plan}</span></td>
-              <td className="px-6 py-4 text-sm text-gray-600">{org.employees}</td>
-              <td className="px-6 py-4 text-sm text-gray-600">{org.departments}</td>
-              <td className="px-6 py-4 text-sm">
-                <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusStyles(org.status)}`}>
-                  <span className={`w-1.5 h-1.5 rounded-full ${
-                    org.status.toLowerCase() === 'approved' || org.status.toLowerCase() === 'active' ? 'bg-green-500' : 
-                    org.status.toLowerCase() === 'rejected' || org.status.toLowerCase() === 'expired' ? 'bg-red-500' : 
-                    'bg-yellow-500'
-                  }`} />
-                  {org.status}
-                </span>
-              </td>
-              <td className="px-6 py-4 text-sm">
-                <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                  org.isActive === "ACTIVE" 
-                    ? "bg-green-50 text-green-700 border border-green-100" 
-                    : "bg-red-50 text-red-700 border border-red-100"
-                }`}>
-                  <span className={`w-1.5 h-1.5 rounded-full ${org.isActive === "ACTIVE" ? "bg-green-500" : "bg-red-500"}`} />
-                  {org.isActive === "ACTIVE" ? "Active" : "Suspended"}
-                </span>
-              </td>
-              <td className="px-6 py-4 text-sm text-gray-600">{formatRenewalDate(org.renewal)}</td>
-              <td className="px-6 py-4">
-                <div className="flex justify-center items-center gap-3">
-                  <button onClick={() => onView(org)} className="text-gray-400 hover:text-indigo-600 transition-colors" title="View"><Eye size={18} /></button>
-                  {org.status.toLowerCase() === 'pending' && (
-                    <>
-                      <button 
-                        onClick={() => onApprove(org._id || org.id)} 
-                        className="text-gray-400 hover:text-green-600 transition-colors" 
-                        title="Approve"
-                      >
-                        <Check size={18} />
-                      </button>
-                      <button 
-                        onClick={() => onReject(org._id || org.id)} 
-                        className="text-gray-400 hover:text-red-600 transition-colors" 
-                        title="Reject"
-                      >
-                        <X size={18} />
-                      </button>
-                    </>
+          {orgs.map((org: any) => {
+            const isDeleted = org.isDeleted === true;
+            return (
+              <tr key={org._id || org.id} className="hover:bg-gray-50/50 transition-colors">
+                <td className="px-6 py-4 text-sm font-medium text-gray-900">{org.companyName || "N/A"}</td>
+                <td className="px-6 py-4 text-sm text-gray-600">{org.name}</td>
+                <td className="px-6 py-4 text-sm text-gray-600">{org.phone || "N/A"}</td>
+                <td className="px-6 py-4 text-sm text-gray-600">{org.email || "N/A"}</td>
+                <td className="px-6 py-4"><span className="px-3 py-1 rounded-full bg-indigo-50 text-indigo-600 text-xs font-medium">{org.plan || "Free"}</span></td>
+                <td className="px-6 py-4 text-sm text-gray-600">{org.employees || 0}</td>
+                <td className="px-6 py-4 text-sm text-gray-600">{org.departments || 0}</td>
+                <td className="px-6 py-4 text-sm">
+                  {isDeleted ? (
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                      Deleted
+                    </span>
+                  ) : (
+                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusStyles(org.status || 'active')}`}>
+                      <span className={`w-1.5 h-1.5 rounded-full ${
+                        (org.status || '').toLowerCase() === 'approved' || (org.status || '').toLowerCase() === 'active' ? 'bg-green-500' : 
+                        (org.status || '').toLowerCase() === 'rejected' || (org.status || '').toLowerCase() === 'expired' ? 'bg-red-500' : 
+                        'bg-yellow-500'
+                      }`} />
+                      {org.status || 'Active'}
+                    </span>
                   )}
-                  <button 
-                    onClick={() => onSuspend(org._id || org.id)} 
-                    className="text-gray-400 transition-colors" 
-                    title={org.isActive === "ACTIVE" ? "Suspend" : "Activate"}
-                  >
-                    {org.isActive === "ACTIVE" ? (
-                      <Ban size={18} className="hover:text-amber-600" />
+                </td>
+                <td className="px-6 py-4 text-sm">
+                  {isDeleted ? (
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-rose-50 text-rose-700 border border-rose-100">
+                      <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                      Deleted
+                    </span>
+                  ) : (
+                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                      org.isActive === "ACTIVE" 
+                        ? "bg-green-50 text-green-700 border border-green-100" 
+                        : "bg-red-50 text-red-700 border border-red-100"
+                    }`}>
+                      <span className={`w-1.5 h-1.5 rounded-full ${org.isActive === "ACTIVE" ? "bg-green-500" : "bg-red-500"}`} />
+                      {org.isActive === "ACTIVE" ? "Active" : "Suspended"}
+                    </span>
+                  )}
+                </td>
+                <td className="px-6 py-4 text-sm text-gray-600">{formatRenewalDate(org.renewal)}</td>
+                <td className="px-6 py-4">
+                  <div className="flex justify-center items-center gap-3">
+                    <button onClick={() => onView(org)} className="text-gray-400 hover:text-indigo-600 transition-colors" title="View"><Eye size={18} /></button>
+                    {isDeleted ? (
+                      <button 
+                        onClick={() => onRestore && onRestore(org)} 
+                        className="text-gray-400 hover:text-emerald-600 transition-colors" 
+                        title="Restore Organization"
+                      >
+                        <RotateCcw size={18} />
+                      </button>
                     ) : (
-                      <CheckCircle size={18} className="hover:text-green-600" />
+                      <>
+                        {(org.status || '').toLowerCase() === 'pending' && (
+                          <>
+                            <button 
+                              onClick={() => onApprove(org._id || org.id)} 
+                              className="text-gray-400 hover:text-green-600 transition-colors" 
+                              title="Approve"
+                            >
+                              <Check size={18} />
+                            </button>
+                            <button 
+                              onClick={() => onReject(org._id || org.id)} 
+                              className="text-gray-400 hover:text-red-600 transition-colors" 
+                              title="Reject"
+                            >
+                              <X size={18} />
+                            </button>
+                          </>
+                        )}
+                        <button 
+                          onClick={() => onSuspend(org._id || org.id)} 
+                          className="text-gray-400 transition-colors" 
+                          title={org.isActive === "ACTIVE" ? "Suspend" : "Activate"}
+                        >
+                          {org.isActive === "ACTIVE" ? (
+                            <Ban size={18} className="hover:text-amber-600" />
+                          ) : (
+                            <CheckCircle size={18} className="hover:text-green-600" />
+                          )}
+                        </button>
+                        <button onClick={() => onDelete(org._id || org.id)} className="text-gray-400 hover:text-red-600 transition-colors" title="Delete"><Trash2 size={18} /></button>
+                      </>
                     )}
-                  </button>
-                  <button onClick={() => onDelete(org._id || org.id)} className="text-gray-400 hover:text-red-600 transition-colors" title="Delete"><Trash2 size={18} /></button>
-                </div>
-              </td>
-            </tr>
-          ))}
+                  </div>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

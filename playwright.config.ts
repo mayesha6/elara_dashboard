@@ -17,6 +17,9 @@ export default defineConfig({
     url: "http://localhost:3010",
     reuseExistingServer: true,
     timeout: 120000,
+    env: {
+      NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL || "https://staging-api.greetely.com/api/v1",
+    },
   },
   projects: [
     {

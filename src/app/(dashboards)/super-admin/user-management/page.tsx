@@ -7,6 +7,7 @@ import AddSuperAdminModal from "./AddSuperAdminModal";
 import UserTable from "./UserTable";
 import StatCard from "@/modules/user/rewards/components/StatCard";
 import DeleteConfirmationModal from "@/components/common/DeleteConfirmationModal";
+import RestoreConfirmationModal from "@/components/common/RestoreConfirmationModal";
 import { Plus, Search, Users, AlertTriangle, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -15,10 +16,12 @@ import {
   useCreateUserMutation,
   useUpdateUserMutation,
   useDeleteUserMutation,
+  useRestoreUserMutation,
 } from "@/redux/api/userApi";
 import { useGetDepartmentsQuery } from "@/redux/api/departmentApi";
 
 export default function EmployeeManagementPage() {
+  const [activeTab, setActiveTab] = useState<"active" | "deleted">("active");
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -31,6 +34,8 @@ export default function EmployeeManagementPage() {
   // States for delete confirmation modal
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState<any>(null);
+  const [isRestoreModalOpen, setIsRestoreModalOpen] = useState(false);
+  const [userToRestore, setUserToRestore] = useState<any>(null);
 
   // Debounce search term
   useEffect(() => {
@@ -47,6 +52,7 @@ export default function EmployeeManagementPage() {
     page: currentPage,
     limit: 10,
     searchTerm: debouncedSearch || undefined,
+    isDeleted: activeTab === "deleted" ? "true" : undefined,
   });
 
   const { data: deptsRes } = useGetDepartmentsQuery();
@@ -55,6 +61,7 @@ export default function EmployeeManagementPage() {
   const [createUser] = useCreateUserMutation();
   const [updateUser] = useUpdateUserMutation();
   const [deleteUser, { isLoading: isDeleting }] = useDeleteUserMutation();
+  const [restoreUser, { isLoading: isRestoring }] = useRestoreUserMutation();
 
   const usersList = usersRes?.data || [];
   const meta = usersRes?.meta || { total: 0, limit: 10, page: 1, totalPage: 1 };
@@ -71,16 +78,34 @@ export default function EmployeeManagementPage() {
     setIsDeleteModalOpen(true);
   };
 
-  const handleDeleteConfirm = async () => {
+  const handleDeleteConfirm = async (confirmInput?: string, reason?: string) => {
     if (!userToDelete) return;
     const id = userToDelete._id || userToDelete.id;
     try {
-      await deleteUser(id).unwrap();
+      await deleteUser({ id, reason }).unwrap();
       setIsDeleteModalOpen(false);
       toast.success("User deleted successfully");
       refetch();
     } catch (err: any) {
       toast.error(err?.data?.message || err?.message || "Failed to delete user");
+    }
+  };
+
+  const handleRestoreClick = (user: any) => {
+    setUserToRestore(user);
+    setIsRestoreModalOpen(true);
+  };
+
+  const handleRestoreConfirm = async (reason?: string) => {
+    if (!userToRestore) return;
+    const id = userToRestore._id || userToRestore.id;
+    try {
+      await restoreUser({ id, reason }).unwrap();
+      setIsRestoreModalOpen(false);
+      toast.success("User restored successfully");
+      refetch();
+    } catch (err: any) {
+      toast.error(err?.data?.message || err?.message || "Failed to restore user");
     }
   };
 
@@ -149,6 +174,38 @@ export default function EmployeeManagementPage() {
         />
       </div>
 
+      {/* Tabs */}
+      <div className="flex border-b border-gray-200 gap-6">
+        <button
+          onClick={() => {
+            setActiveTab("active");
+            setCurrentPage(1);
+          }}
+          className={`pb-3 text-sm font-semibold transition-colors border-b-2 ${
+            activeTab === "active"
+              ? "border-indigo-600 text-indigo-600"
+              : "border-transparent text-gray-500 hover:text-gray-700"
+          }`}
+        >
+          Active Users
+        </button>
+        <button
+          onClick={() => {
+            setActiveTab("deleted");
+            setCurrentPage(1);
+          }}
+          className={`pb-3 text-sm font-semibold transition-colors border-b-2 flex items-center gap-1.5 ${
+            activeTab === "deleted"
+              ? "border-rose-600 text-rose-600"
+              : "border-transparent text-gray-500 hover:text-gray-700"
+          }`}
+        >
+          Deleted Users
+        </button>
+      </div>
+
+
+
       {/* Search, Filter & Add Button */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pb-2">
         <div className="w-full sm:w-auto flex flex-wrap items-center gap-4 ml-auto">
@@ -212,6 +269,7 @@ export default function EmployeeManagementPage() {
             data={usersList}
             onDelete={handleDeleteClick}
             onEdit={handleEditClick}
+            onRestore={handleRestoreClick}
             currentPage={currentPage}
             totalPages={totalPages}
             onPageChange={(p: number) => setCurrentPage(p)}
@@ -247,8 +305,18 @@ export default function EmployeeManagementPage() {
         onConfirm={handleDeleteConfirm}
         title="Delete User"
         itemName={userToDelete?.name}
-        description={`Are you sure you want to delete user "${userToDelete?.name}" (${userToDelete?.email})? This action is permanent and cannot be undone.`}
+        description={`Are you sure you want to delete user "${userToDelete?.name}" (${userToDelete?.email})? This will soft-delete the user account.`}
         isLoading={isDeleting}
+      />
+
+      <RestoreConfirmationModal
+        isOpen={isRestoreModalOpen}
+        onClose={() => setIsRestoreModalOpen(false)}
+        onConfirm={handleRestoreConfirm}
+        title="Restore User"
+        itemName={userToRestore?.name}
+        description={`Are you sure you want to restore user "${userToRestore?.name}" (${userToRestore?.email})? This will reactivate the account.`}
+        isLoading={isRestoring}
       />
     </div>
   );

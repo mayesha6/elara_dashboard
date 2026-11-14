@@ -1,11 +1,12 @@
 "use client";
 import Pagination from "@/components/common/pagination";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, RotateCcw } from "lucide-react";
 
 export default function UserTable({
   data, 
   onDelete, 
   onEdit,
+  onRestore,
   currentPage = 1,
   totalPages = 1,
   onPageChange,
@@ -55,6 +56,7 @@ export default function UserTable({
               const orgNameDisplay = user.role === "SUPER_ADMIN"
                 ? "Greetely System"
                 : user.organizationId?.name || (typeof user.organizationId === "string" ? user.organizationId : "") || user.organization || "N/A";
+              const isDeleted = user.isDeleted === true;
 
               return (
                 <tr key={user._id || user.id || i} className="hover:bg-gray-50/50">
@@ -75,24 +77,43 @@ export default function UserTable({
                     </span>
                   </td>
                   <td className="font-normal text-[14px] px-6 py-4">
-                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${
-                      isActive 
-                        ? "bg-green-50 text-green-600 border border-green-100" 
-                        : "bg-red-50 text-red-600 border border-red-100"
-                    }`}>
-                      <span className={`w-1.5 h-1.5 rounded-full ${isActive ? "bg-green-500" : "bg-red-500"}`} />
-                      {isActive ? "Active" : "Inactive"}
-                    </span>
+                    {isDeleted ? (
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-rose-50 text-rose-600 border border-rose-100">
+                        <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                        Deleted
+                      </span>
+                    ) : (
+                      <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${
+                        isActive 
+                          ? "bg-green-50 text-green-600 border border-green-100" 
+                          : "bg-red-50 text-red-600 border border-red-100"
+                      }`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${isActive ? "bg-green-500" : "bg-red-500"}`} />
+                        {isActive ? "Active" : "Inactive"}
+                      </span>
+                    )}
                   </td>
 
                   <td className="px-6 py-4 text-gray-500 text-center">
                     <div className="flex justify-center gap-3">
-                      <button onClick={() => onEdit(user)} className="text-gray-400 hover:text-indigo-600" title="Edit">
-                        <Pencil size={18} />
-                      </button>
-                      <button onClick={() => onDelete(user.id || user._id)} className="text-gray-400 hover:text-red-600" title="Delete">
-                        <Trash2 size={18} />
-                      </button>
+                      {isDeleted ? (
+                        <button
+                          onClick={() => onRestore && onRestore(user)}
+                          className="text-gray-400 hover:text-emerald-600 transition-colors"
+                          title="Restore User"
+                        >
+                          <RotateCcw size={18} />
+                        </button>
+                      ) : (
+                        <>
+                          <button onClick={() => onEdit(user)} className="text-gray-400 hover:text-indigo-600" title="Edit">
+                            <Pencil size={18} />
+                          </button>
+                          <button onClick={() => onDelete(user.id || user._id)} className="text-gray-400 hover:text-red-600" title="Delete">
+                            <Trash2 size={18} />
+                          </button>
+                        </>
+                      )}
                     </div>
                   </td>
                 </tr>

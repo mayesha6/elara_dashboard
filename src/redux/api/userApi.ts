@@ -76,9 +76,23 @@ export const userApi = baseApi.injectEndpoints({
     }),
 
     deleteUser: builder.mutation({
-      query: (id) => ({
-        url: `/user/${id}`,
-        method: "DELETE",
+      query: (arg: string | { id: string; reason?: string }) => {
+        const id = typeof arg === "string" ? arg : arg.id;
+        const body = typeof arg === "object" && arg.reason ? { reason: arg.reason } : undefined;
+        return {
+          url: `/user/${id}`,
+          method: "DELETE",
+          body,
+        };
+      },
+      invalidatesTags: ["User"],
+    }),
+
+    restoreUser: builder.mutation({
+      query: ({ id, reason }: { id: string; reason?: string }) => ({
+        url: `/user/${id}/restore`,
+        method: "POST",
+        body: reason ? { reason } : {},
       }),
       invalidatesTags: ["User"],
     }),
@@ -128,6 +142,7 @@ export const {
   useCreateUserMutation,
   useUpdateUserMutation,
   useDeleteUserMutation,
+  useRestoreUserMutation,
   useDeleteOwnAccountMutation,
   useGetSingleUserQuery,
   useGetUserBySlugQuery,

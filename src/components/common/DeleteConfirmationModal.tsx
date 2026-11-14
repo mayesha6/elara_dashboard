@@ -5,7 +5,7 @@ import { X, AlertTriangle } from "lucide-react";
 interface DeleteConfirmationModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: (confirmInput?: string) => void;
+  onConfirm: (confirmInput?: string, reason?: string) => void;
   title?: string;
   itemName?: string;
   description?: string;
@@ -14,6 +14,8 @@ interface DeleteConfirmationModalProps {
   confirmInputLabel?: string;
   confirmInputPlaceholder?: string;
   expectedInputValue?: string;
+  showReasonInput?: boolean;
+  reasonPlaceholder?: string;
 }
 
 export default function DeleteConfirmationModal({
@@ -28,8 +30,11 @@ export default function DeleteConfirmationModal({
   confirmInputLabel = "Please enter your password or type DELETE to confirm:",
   confirmInputPlaceholder = "Type DELETE to confirm",
   expectedInputValue,
+  showReasonInput = true,
+  reasonPlaceholder = "e.g. Requested account closure, policy violation...",
 }: DeleteConfirmationModalProps) {
   const [inputValue, setInputValue] = useState("");
+  const [reason, setReason] = useState("");
 
   if (!isOpen) return null;
 
@@ -41,12 +46,14 @@ export default function DeleteConfirmationModal({
         : !inputValue.trim()));
 
   const handleConfirm = () => {
-    onConfirm(inputValue);
+    onConfirm(inputValue, reason.trim() || undefined);
     setInputValue("");
+    setReason("");
   };
 
   const handleClose = () => {
     setInputValue("");
+    setReason("");
     onClose();
   };
 
@@ -79,7 +86,7 @@ export default function DeleteConfirmationModal({
         </p>
 
         {requireConfirmInput && (
-          <div className="mb-6 space-y-2">
+          <div className="mb-4 space-y-2">
             <label className="text-xs font-semibold text-gray-700 block">
               {confirmInputLabel}
             </label>
@@ -89,6 +96,21 @@ export default function DeleteConfirmationModal({
               onChange={(e) => setInputValue(e.target.value)}
               placeholder={confirmInputPlaceholder}
               className="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500"
+            />
+          </div>
+        )}
+
+        {showReasonInput && (
+          <div className="mb-5 space-y-1.5">
+            <label className="text-xs font-semibold text-gray-700 block">
+              Reason for Deletion <span className="text-gray-400 font-normal">(optional, logged in audit trail)</span>
+            </label>
+            <textarea
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              placeholder={reasonPlaceholder}
+              rows={2}
+              className="w-full px-3 py-2 text-xs border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 resize-none"
             />
           </div>
         )}

@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import OrganizationTable from "@/modules/super-admin/organization/OrganizationTable";
 import ViewOrganizationModal from "@/modules/super-admin/organization/ViewOrganizationModal";
 import DeleteConfirmationModal from "@/modules/super-admin/organization/DeleteConfirmationModal";
+import RestoreConfirmationModal from "@/components/common/RestoreConfirmationModal";
 import SuspendConfirmationModal from "@/modules/super-admin/organization/SuspendConfirmationModal";
 import Pagination from "@/components/common/pagination";
 import { Search } from "lucide-react";
@@ -14,6 +15,7 @@ import { slugify } from "@/utils/slugify";
 import { useGetDepartmentUsersQuery } from "@/redux/api/userApi";
 import { 
   useDeleteOrganizationMutation, 
+  useRestoreOrganizationMutation, 
   useUpdateOrganizationStatusMutation,
   useApproveOrganizationMutation,
   useRejectOrganizationMutation 
@@ -21,6 +23,7 @@ import {
 
 export default function OrganizationManagement() {
   const router = useRouter();
+  const [activeTab, setActiveTab] = useState<"active" | "deleted">("active");
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -30,6 +33,7 @@ export default function OrganizationManagement() {
 
   // States for delete and suspend modals
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isRestoreModalOpen, setIsRestoreModalOpen] = useState(false);
   const [isSuspendModalOpen, setIsSuspendModalOpen] = useState(false);
   const [selectedOrgForAction, setSelectedOrgForAction] = useState<any>(null);
 
@@ -48,13 +52,15 @@ export default function OrganizationManagement() {
     page: currentPage,
     limit: 10,
     searchTerm: debouncedSearch || undefined,
+    isDeleted: activeTab === "deleted" ? "true" : undefined,
   });
 
   const organizations = orgsRes?.data || [];
   const meta = orgsRes?.meta || { total: 0, limit: 10, page: 1, totalPage: 1 };
   const totalPages = meta.totalPage;
 
-  const [deleteOrganization] = useDeleteOrganizationMutation();
+  const [deleteOrganization, { isLoading: isDeleting }] = useDeleteOrganizationMutation();
+  const [restoreOrganization, { isLoading: isRestoring }] = useRestoreOrganizationMutation();
   const [updateOrganizationStatus] = useUpdateOrganizationStatusMutation();
   const [approveOrganization] = useApproveOrganizationMutation();
   const [rejectOrganization] = useRejectOrganizationMutation();
@@ -110,17 +116,36 @@ export default function OrganizationManagement() {
     setIsDeleteModalOpen(true);
   };
 
-  const handleDeleteConfirm = async () => {
+  const handleDeleteConfirm = async (reason?: string) => {
     if (!selectedOrgForAction) return;
     const id = selectedOrgForAction._id || selectedOrgForAction.id;
     try {
-      await deleteOrganization(id).unwrap();
+      await deleteOrganization({ id, reason }).unwrap();
       setIsDeleteModalOpen(false);
       toast.success("Organization deleted successfully");
       refetch();
     } catch (err: any) {
       toast.error(err?.data?.message || err?.message || "Failed to delete organization");
       console.error("Failed to delete organization:", err);
+    }
+  };
+
+  const handleRestoreClick = (org: any) => {
+    setSelectedOrgForAction(org);
+    setIsRestoreModalOpen(true);
+  };
+
+  const handleRestoreConfirm = async (reason?: string) => {
+    if (!selectedOrgForAction) return;
+    const id = selectedOrgForAction._id || selectedOrgForAction.id;
+    try {
+      await restoreOrganization({ id, reason }).unwrap();
+      setIsRestoreModalOpen(false);
+      toast.success("Organization restored successfully");
+      refetch();
+    } catch (err: any) {
+      toast.error(err?.data?.message || err?.message || "Failed to restore organization");
+      console.error("Failed to restore organization:", err);
     }
   };
 
@@ -147,6 +172,38 @@ export default function OrganizationManagement() {
         </div>
       </div>
 
+      {/* Tabs */}
+      <div className="flex border-b border-gray-200 gap-6">
+        <button
+          onClick={() => {
+            setActiveTab("active");
+            setCurrentPage(1);
+          }}
+          className={`pb-3 text-sm font-semibold transition-colors border-b-2 ${
+            activeTab === "active"
+              ? "border-indigo-600 text-indigo-600"
+              : "border-transparent text-gray-500 hover:text-gray-700"
+          }`}
+        >
+          Active Organizations
+        </button>
+        <button
+          onClick={() => {
+            setActiveTab("deleted");
+            setCurrentPage(1);
+          }}
+          className={`pb-3 text-sm font-semibold transition-colors border-b-2 flex items-center gap-1.5 ${
+            activeTab === "deleted"
+              ? "border-rose-600 text-rose-600"
+              : "border-transparent text-gray-500 hover:text-gray-700"
+          }`}
+        >
+          Deleted Organizations
+        </button>
+      </div>
+
+
+
       {isLoading ? (
         <div className="flex flex-col items-center justify-center min-h-[300px] gap-2">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
@@ -159,6 +216,7 @@ export default function OrganizationManagement() {
             onView={handleView}
             onSuspend={handleSuspendClick}
             onDelete={handleDeleteClick}
+            onRestore={handleRestoreClick}
             onApprove={handleApprove}
             onReject={handleReject}
           />
@@ -185,7 +243,18 @@ export default function OrganizationManagement() {
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
         onConfirm={handleDeleteConfirm}
-        orgName={selectedOrgForAction?.name || ""}
+        orgName={selectedOrgForAction?.companyName || selectedOrgForAction?.name || ""}
+        isLoading={isDeleting}
+      />
+
+      <RestoreConfirmationModal
+        isOpen={isRestoreModalOpen}
+        onClose={() => setIsRestoreModalOpen(false)}
+        onConfirm={handleRestoreConfirm}
+        title="Restore Organization"
+        itemName={selectedOrgForAction?.companyName || selectedOrgForAction?.name || ""}
+        description={`Are you sure you want to restore organization "${selectedOrgForAction?.companyName || selectedOrgForAction?.name || ""}"? All associated departments and employees will also be restored.`}
+        isLoading={isRestoring}
       />
 
       <SuspendConfirmationModal
