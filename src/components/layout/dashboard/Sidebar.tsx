@@ -15,6 +15,7 @@ import { useDeleteOwnAccountMutation } from "@/redux/api/userApi";
 import { toast } from "sonner";
 import DeleteConfirmationModal from "@/components/common/DeleteConfirmationModal";
 import { slugify } from "@/utils/slugify";
+import { getWebsiteUrl } from "@/config/env";
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -89,7 +90,7 @@ export default function Sidebar() {
       await logoutUser(undefined).unwrap().catch(() => {});
     } finally {
       dispatch(logout());
-      window.location.replace("https://greetely.com/login");
+      window.location.replace(`${getWebsiteUrl()}/login`);
     }
   };
 

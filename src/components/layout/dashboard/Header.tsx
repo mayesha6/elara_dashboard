@@ -129,12 +129,12 @@ export default function Header() {
 
   return (
     <header className="h-auto md:h-20 bg-white border-b border-b-gray flex items-center justify-between px-4 md:px-8 py-3 gap-4">
-      {/* Greetely Logo */}
+      {/* Elara Logo */}
       <div className="flex items-center gap-2">
         <Link href={websiteUrl} className="flex items-center gap-2 shrink-0">
           <Image
             src={logo} 
-            alt="Greetely Logo"
+            alt="Elara Logo"
             width={500}
             height={500}
             priority

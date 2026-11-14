@@ -1,4 +1,4 @@
-# Greetely / Employee Recognition Dashboard
+# Elara / Employee Recognition Dashboard
 
 A modern, role-based Employee Recognition & Rewards Management Platform built with Next.js 16 (App Router), React 19, TypeScript, Redux Toolkit, and Tailwind CSS.
 
@@ -7,16 +7,16 @@ A modern, role-based Employee Recognition & Rewards Management Platform built wi
 ## 🔒 Security & Architecture Overview
 
 The system operates across four primary components:
-1. **Landing Website (`https://greetely.com`)**: Public marketing, pricing, registration, and user authentication portal.
-2. **Dashboard Application (`https://dashboard.greetely.com`)**: Multi-tenant client dashboard for Super Admin, Organization Admin, Department Admin, and Employee users.
-3. **Backend API (`https://api.greetely.com/api/v1`)**: Node.js/Express REST API enforcing Role-Based Access Control (RBAC), organization isolation, database audit logs, and session management.
+1. **Landing Website (`https://elara.com`)**: Public marketing, pricing, registration, and user authentication portal.
+2. **Dashboard Application (`https://dashboard.elara.com`)**: Multi-tenant client dashboard for Super Admin, Organization Admin, Department Admin, and Employee users.
+3. **Backend API (`https://api.elara.com/api/v1`)**: Node.js/Express REST API enforcing Role-Based Access Control (RBAC), organization isolation, database audit logs, and session management.
 4. **Stripe Billing Integration**: Handles subscription plans, payment processing, upgrade events, and status sync via webhooks.
 
 ### Security Best Practices
 - **Token Management**: Authentication tokens are passed via `HttpOnly`, `Secure`, and `SameSite=Lax` cookies. Readable sensitive tokens are removed from URL query parameters.
 - **Cross-Organization Isolation**: Every request is verified by backend middleware against user role, organization ID, department, and resource ownership.
 - **High-Impact Deletions**: Deleting organization accounts or employee accounts requires double-confirmation (`DELETE` keyword validation) and maintains audit log entries.
-- **Clean Storage**: Logout purges only Greetely-related browser storage keys (`user`, `token`, `refreshToken`, `accessToken`, `persist:auth`).
+- **Clean Storage**: Logout purges only Elara-related browser storage keys (`user`, `token`, `refreshToken`, `accessToken`, `persist:auth`).
 
 ---
 
@@ -38,13 +38,13 @@ Copy `.env.example` to `.env.local` for local development:
 
 ```env
 # Backend API Base URL
-NEXT_PUBLIC_BASE_URL="https://api.greetely.com/api/v1"
+NEXT_PUBLIC_BASE_URL="https://api.elara.com/api/v1"
 
-# Main Greetely Website URL
-NEXT_PUBLIC_WEBSITE_URL="https://greetely.com"
+# Main Elara Website URL
+NEXT_PUBLIC_WEBSITE_URL="https://elara.com"
 
 # Dashboard URL
-NEXTAUTH_URL="https://dashboard.greetely.com"
+NEXTAUTH_URL="https://dashboard.elara.com"
 ```
 
 ### Local Ports Configuration
@@ -90,8 +90,8 @@ Automated checks trigger on every push and pull request via `.github/workflows/c
 
 ### Deployment Steps
 1. Push committed code to `main` branch after passing CI checks.
-2. Server triggers deployment runner (`pm2 restart greetely-dashboard` or container rebuild).
-3. Validate health endpoint at `https://dashboard.greetely.com/api/health` or home route.
+2. Server triggers deployment runner (`pm2 restart elara-dashboard` or container rebuild).
+3. Validate health endpoint at `https://dashboard.elara.com/api/health` or home route.
 
 ---
 
@@ -109,9 +109,9 @@ If issues arise in production:
    git checkout v1.x.x-previous
    npm install
    npm run build
-   pm2 restart greetely-dashboard
+   pm2 restart elara-dashboard
    ```
-2. Verify system functionality on `https://dashboard.greetely.com`.
+2. Verify system functionality on `https://dashboard.elara.com`.
 
 ---
 
@@ -120,7 +120,7 @@ If issues arise in production:
 ```mermaid
 sequenceDiagram
     participant User as User / Admin
-    participant Website as Greetely Website
+    participant Website as Elara Website
     participant Dashboard as Dashboard App
     participant Backend as Express Backend API
     participant Stripe as Stripe Gateway
@@ -140,4 +140,4 @@ sequenceDiagram
 
 ## 📜 License
 
-Greetely Private Repository - All rights reserved.
+Elara Private Repository - All rights reserved.

@@ -2,7 +2,7 @@
 import { useEffect } from "react";
 import { useGetMeQuery } from "@/redux/api/authApi";
 import { slugify } from "@/utils/slugify";
-import { getWebsiteUrl, clearGreetelyStorage } from "@/config/env";
+import { getWebsiteUrl, clearElaraStorage } from "@/config/env";
 import { removeAuthCookies } from "@/redux/features/authSlice";
 
 export default function HomePage() {
@@ -13,7 +13,7 @@ export default function HomePage() {
 
     if (isError || !profileRes?.data) {
       removeAuthCookies();
-      clearGreetelyStorage();
+      clearElaraStorage();
       window.location.href = `${getWebsiteUrl()}/login`;
       return;
     }
@@ -23,7 +23,7 @@ export default function HomePage() {
 
     if (!role) {
       removeAuthCookies();
-      clearGreetelyStorage();
+      clearElaraStorage();
       window.location.href = `${getWebsiteUrl()}/login`;
       return;
     }

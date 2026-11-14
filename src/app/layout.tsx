@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export const metadata: Metadata = {
-  title: "Greetely Dashboard",
+  title: "Elara Dashboard",
   description: "Enterprise level SaaS application",
 };
 

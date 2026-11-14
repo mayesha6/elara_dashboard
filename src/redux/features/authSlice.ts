@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { clearGreetelyStorage, getApiBaseUrl } from "@/config/env";
+import { clearElaraStorage, getApiBaseUrl } from "@/config/env";
 
 export interface UserProfile {
   _id?: string;
@@ -52,7 +52,7 @@ const authSlice = createSlice({
     logout: (state) => {
       state.user = null;
       state.isAuthenticated = false;
-      clearGreetelyStorage();
+      clearElaraStorage();
     },
   },
 });

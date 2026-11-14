@@ -24,7 +24,7 @@ export default function SettingsPage() {
     email: user?.email || "",
     phone: user?.phone || "",
     department: user?.department || "Department Admin",
-    organization: user?.organizationId?.name || (typeof user?.organizationId === "string" ? user?.organizationId : "Greetely"),
+    organization: user?.organizationId?.name || (typeof user?.organizationId === "string" ? user?.organizationId : "Elara"),
     profilePicture: user?.picture || "",
   };
 

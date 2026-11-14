@@ -54,7 +54,7 @@ export default function UserTable({
               };
 
               const orgNameDisplay = user.role === "SUPER_ADMIN"
-                ? "Greetely System"
+                ? "Elara System"
                 : user.organizationId?.name || (typeof user.organizationId === "string" ? user.organizationId : "") || user.organization || "N/A";
               const isDeleted = user.isDeleted === true;
 

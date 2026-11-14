@@ -163,7 +163,7 @@ export default function Step4Preview({ onBack, onClose }: any) {
 
         <div className="relative z-10">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-3xl font-extrabold tracking-tight drop-shadow-xs">Greetely</h2>
+            <h2 className="text-3xl font-extrabold tracking-tight drop-shadow-xs">Elara</h2>
             <span className="text-xs bg-white/20 backdrop-blur-md px-3 py-1 rounded-full font-semibold border border-white/20">
               {selectedCategoryObj?.name || "Recognition"}
             </span>

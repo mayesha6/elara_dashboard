@@ -24,7 +24,7 @@ export default function SettingsPage() {
     email: user?.email || "",
     phone: user?.phone || "",
     department: user?.department || (user?.role === "SUPER_ADMIN" ? "Super Admin" : "System Admin"),
-    organization: user?.role === "SUPER_ADMIN" ? "Greetely System" : (user?.organizationId?.name || (typeof user?.organizationId === "string" ? user?.organizationId : "Greetely")),
+    organization: user?.role === "SUPER_ADMIN" ? "Elara System" : (user?.organizationId?.name || (typeof user?.organizationId === "string" ? user?.organizationId : "Elara")),
     profilePicture: user?.picture || "",
   };
 

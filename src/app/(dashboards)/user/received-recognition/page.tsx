@@ -229,7 +229,7 @@ export default function ReceiveRecognitionPage() {
               {/* Top Row: Brand & Close Button */}
               <div className="flex justify-between items-start w-full">
                 <div>
-                  <h2 className="text-3xl font-extrabold tracking-tight text-white mb-6">Greetely</h2>
+                  <h2 className="text-3xl font-extrabold tracking-tight text-white mb-6">Elara</h2>
                   <div className="space-y-0.5">
                     <p className="text-xs uppercase tracking-wider text-white/60 font-semibold">From:</p>
                     <p className="text-2xl font-black text-white leading-tight">

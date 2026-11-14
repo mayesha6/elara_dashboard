@@ -1,5 +1,5 @@
 /**
- * Centralized Configuration & Environment Helper for Greetely Dashboard
+ * Centralized Configuration & Environment Helper for Elara Dashboard
  */
 
 export const getWebsiteUrl = (): string => {
@@ -20,7 +20,7 @@ export const getWebsiteUrl = (): string => {
       return `${window.location.protocol}//${rootDomain}`;
     }
   }
-  return "https://greetely.com";
+  return "https://elara.com";
 };
 
 export const getApiBaseUrl = (): string => {
@@ -29,11 +29,11 @@ export const getApiBaseUrl = (): string => {
   }
   if (typeof window !== "undefined") {
     const hostname = window.location.hostname;
-    if (hostname.includes("greetely.com")) {
-      return "https://api.greetely.com/api/v1";
+    if (hostname.includes("elara.com")) {
+      return "https://api.elara.com/api/v1";
     }
   }
-  return "https://api.greetely.com/api/v1";
+  return "https://api.elara.com/api/v1";
 };
 
 export const isProductionEnvironment = (): boolean => {
@@ -71,24 +71,24 @@ export const getAuthCookieOptions = () => {
 };
 
 /**
- * Clear ONLY Greetely-specific storage keys on logout to prevent wiping
+ * Clear ONLY Elara-specific storage keys on logout to prevent wiping
  * unrelated browser state/preferences for other applications.
  */
-export const GREETELY_STORAGE_KEYS = [
+export const ELARA_STORAGE_KEYS = [
   "user",
   "role",
   "token",
   "refreshToken",
   "accessToken",
-  "greetely_theme",
-  "greetely_session",
+  "elara_theme",
+  "elara_session",
   "persist:auth",
   "persist:root",
 ];
 
-export const clearGreetelyStorage = () => {
+export const clearElaraStorage = () => {
   if (typeof window === "undefined") return;
-  GREETELY_STORAGE_KEYS.forEach((key) => {
+  ELARA_STORAGE_KEYS.forEach((key) => {
     try {
       localStorage.removeItem(key);
       sessionStorage.removeItem(key);

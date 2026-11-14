@@ -5,15 +5,26 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const nonce = btoa(crypto.randomUUID());
   const isDevelopment = process.env.NODE_ENV !== "production";
+  const customApiOrigin = process.env.NEXT_PUBLIC_BASE_URL
+    ? (() => {
+        try {
+          return new URL(process.env.NEXT_PUBLIC_BASE_URL).origin;
+        } catch {
+          return "";
+        }
+      })()
+    : "";
+
   const connectSources = [
     "'self'",
-    "https://api.greetely.com",
-    "https://greetely.com",
-    "https://dashboard.greetely.com",
+    "https://api.elara.com",
+    "https://elara.com",
+    "https://dashboard.elara.com",
+    "wss://api.elara.com",
     "https://api.stripe.com",
-    "wss://api.greetely.com",
+    ...(customApiOrigin ? [customApiOrigin] : []),
     ...(isDevelopment ? ["http://localhost:*", "ws://localhost:*"] : []),
-  ].join(" ");
+  ].filter(Boolean).join(" ");
   const contentSecurityPolicy = [
     "default-src 'self'",
     `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${isDevelopment ? " 'unsafe-eval'" : ""}`,
